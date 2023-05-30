@@ -1,0 +1,64 @@
+.footerImgDiv {
+    height: 514px;
+}
+
+.footerImgCover {
+    position: absolute;
+    z-index: 0;
+    max-width: none;
+}
+
+.footerNewsletter {
+    text-align: center;
+    margin: auto;
+    color: white;
+    z-index: 1;
+}
+
+.footerNewsletterH2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.footerNewsletterH3 {
+    font-size: 17px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.footerEmail {
+    position: relative;
+    width: 750px;
+    background-color: #F9FAFB;
+    color:black;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 4px;
+}
+
+.footerEmailInputImg {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+}
+
+.footerEmailInput {
+    width: 100%;
+    padding: 10px;
+    padding-left: 15px;
+    padding-right: 35px;
+}
+
+.footerEmailInput::placeholder {
+    color:black;
+}
+
+.footerEnd{
+    font-size: 12px;
+    font-weight: 400;
+    text-align: right;
+}
+
+.footerEndDifferent{
+    width: 80%;
+}

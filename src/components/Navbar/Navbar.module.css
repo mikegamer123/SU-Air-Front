@@ -1,0 +1,36 @@
+.searchBar{
+    padding: 10px;
+    background-color: #F6F6F6;
+}
+
+.searchIcon{
+    float: left;
+}
+
+.searchInput{
+    background-color: #F6F6F6;
+    margin-left: 36px;
+    padding-left: 7px;
+}
+
+.searchInput::placeholder{
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 400;
+}
+
+.registrationIcon{
+float: left;
+}
+
+.nav{
+    font-weight: 500;
+}
+
+.currentPage{
+    color: #009988;
+    text-decoration: underline;
+}
+
+.hoveredListItem:hover{
+    color: #009988;
+}
