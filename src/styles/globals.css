@@ -77,4 +77,9 @@ body {
   margin-left: auto !important;
 }
 
+.toast-active {
+  right: 80px!important;
+  opacity: 100%!important;
+}
+
 

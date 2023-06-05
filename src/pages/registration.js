@@ -30,7 +30,7 @@ export default function Registration() {
             password: password
         };
 
-        fetch(`${BASE_API_URL}/auth/register`, {
+        fetch(`${BASE_API_URL}/rauth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -39,10 +39,10 @@ export default function Registration() {
         })
             .then((response) => {
                 if (response.ok) {
-                    showToast('Registration successful');
+                    showToast('Registracija uspešna!');
                     // Perform further actions after successful registration
                 } else {
-                    showToast('Registration failed', 'error');
+                    showToast('Registrcija neuspešna!', 'error');
                     // Handle registration failure
                 }
             })
@@ -59,7 +59,7 @@ export default function Registration() {
             password: password
         };
 
-        fetch(`${BASE_API_URL}/auth/login`, {
+        fetch(`${BASE_API_URL}/rauth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -68,10 +68,10 @@ export default function Registration() {
         })
             .then((response) => {
                 if (response.ok) {
-                    console.log('Login successful');
+                    showToast('Login uspešan!');
                     // Perform further actions after successful login
                 } else {
-                    console.error('Login failed');
+                    showToast('Login netačan!', 'error');
                     // Handle login failure
                 }
             })
@@ -110,7 +110,7 @@ export default function Registration() {
                         <div className="flex items-center justify-between">
                             <button
                                 className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                type="button">
+                                type="submit">
                                 Prijavi se
                             </button>
                             <a className="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-400"

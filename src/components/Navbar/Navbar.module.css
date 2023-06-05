@@ -34,3 +34,30 @@ float: left;
 .hoveredListItem:hover{
     color: #009988;
 }
+
+.toast {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    width: fit-content;
+    top: 50px;
+    right: -500px;
+    background-color: black;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    border: 5px solid #029c91;
+    opacity: 0%;
+    transition: all 0.25s ease-out;
+    color:white;
+}
+
+.closeButton {
+    background-color: black;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.toastPic{
+    width: 50px;
+}
