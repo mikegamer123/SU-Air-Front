@@ -22,6 +22,14 @@ export default function Registration() {
         setPassword(event.target.value);
     };
 
+    const handleGoogleAuth = (event) => {
+            const url = `${BASE_API_URL}/auth/google`;
+            const width = 800;
+            const height = 600;
+            const options = `width=${width},height=${height},resizable,scrollbars=yes,status=1`;
+            window.open(url, '_blank', options);
+    };
+
     const handleSubmitRegister = (event) => {
         event.preventDefault();
         const data = {
@@ -39,10 +47,11 @@ export default function Registration() {
         })
             .then((response) => {
                 if (response.ok) {
-                    showToast('Registracija uspešna!');
-                    // Perform further actions after successful registration
+                    response.text().then((text) => {
+                        showToast('Registracija uspešna!<br>' + text);
+                    });
                 } else {
-                    showToast('Registrcija neuspešna!', 'error');
+                    showToast('Registracija neuspešna!', 'error');
                     // Handle registration failure
                 }
             })
@@ -68,8 +77,14 @@ export default function Registration() {
         })
             .then((response) => {
                 if (response.ok) {
-                    showToast('Login uspešan!');
-                    // Perform further actions after successful login
+                    response.json().then((json) => {
+                        const {token} = json; // Access the 'token' property from the JSON response
+                        localStorage.setItem('login_token', token); // Save the token to localStorage with the key 'login_token'
+                        showToast('Login uspešan!<br>Prebacićemo vas na početnu stranicu');
+                        setTimeout(function (){
+                            window.location.href = '/';
+                        },3000)
+                    });
                 } else {
                     showToast('Login netačan!', 'error');
                     // Handle login failure
@@ -107,13 +122,27 @@ export default function Registration() {
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                                 id="password" value={password} onChange={handlePasswordChange}  type="password"  placeholder="******************" />
                         </div>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap">
                             <button
                                 className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                 type="submit">
                                 Prijavi se
                             </button>
-                            <a className="inline-block align-baseline font-bold text-sm text-green-600 hover:text-green-400"
+                            {/* Google auth login button */}
+                            <div className="px-6 sm:px-0 max-w-sm">
+                                <button type="button" onClick={handleGoogleAuth}
+                                        className="text-white w-full  bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-between dark:focus:ring-[#4285F4]/55">
+                                    <svg className="mr-2 -ml-1 w-4 h-4" aria-hidden="true" focusable="false"
+                                         data-prefix="fab" data-icon="google" role="img"
+                                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                                        <path fill="currentColor"
+                                              d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"></path>
+                                    </svg>
+                                    Prijavi se sa Google
+                                    <div></div>
+                                </button>
+                            </div>
+                            <a className="inline-block pt-5 align-baseline font-bold text-md text-green-600 hover:text-green-400"
                                href="#">
                                 Zaboravili ste lozinku?
                             </a>
