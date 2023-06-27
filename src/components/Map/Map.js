@@ -1,27 +1,45 @@
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import {MapContainer, Marker, Popup, Rectangle, TileLayer, ZoomControl} from 'react-leaflet'
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import { HeatmapLayer } from "react-leaflet-heatmap-layer-v3/lib"
 import { addressPoints } from "src/examplePoints"
 import {Icon} from 'leaflet'
+import {useRouter} from 'next/router';
+import {useEffect, useState} from "react";
+
+const createRectangleAroundPoint = (center, width, height) => {
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    const topLeft = [center[0] - halfHeight, center[1] - halfWidth];
+    const bottomRight = [center[0] + halfHeight, center[1] + halfWidth];
+
+    return [topLeft, bottomRight];
+};
 
 const Map = () => {
+    const router = useRouter();
+    const slug = router.query.slug;
+    const districts = JSON.parse(localStorage.getItem("districts"));
+    const matchedDistrict = districts.find(district => district.slug === slug);
+    const user = JSON.parse(localStorage.getItem("user-loc")) || null;
 
+    useEffect(() => {
+        if (user) {
+            localStorage.removeItem("user-loc");
+        }
+    }, []);
+
+    const center = addressPoints[0];
+    const rectangleBounds = createRectangleAroundPoint(center, 0.05, 0.025);
 
     return (
-        <MapContainer center={[46.117592, 19.695603]} zoom={13} scrollWheelZoom={false} style={{height: 400, width: "100%"}}>
+        <MapContainer center={user ? [user.latitude, user.longitude] : [matchedDistrict.latitude, matchedDistrict.longitude]} zoom={15} zoomControl={false}  scrollWheelZoom={false} style={{height: 1000, width: "100%"}}>
+            <ZoomControl position="bottomright" /> {/* Add a custom zoom control at the bottom left */}
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <HeatmapLayer
-                fitBoundsOnLoad
-                fitBoundsOnUpdate
-                points={addressPoints}
-                longitudeExtractor={m => m[1]}
-                latitudeExtractor={m => m[0]}
-                intensityExtractor={m => parseFloat(m[2])}
-            />
-            <Marker position={[46.117592, 19.695603]} icon={new Icon({iconUrl: markerIconPng.src, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+            <Rectangle bounds={rectangleBounds} color="yellow" />
+            <Marker position={user ? [user.latitude, user.longitude] : [matchedDistrict.latitude, matchedDistrict.longitude]} icon={new Icon({iconUrl: markerIconPng.src, iconSize: [25, 41], iconAnchor: [12, 41]})}>
                 <Popup>
                     Trenutna Lokacija. <br /> Pogledajte kvalitet vazduha.
                 </Popup>

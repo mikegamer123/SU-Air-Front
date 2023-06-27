@@ -1,4 +1,3 @@
-import FooterImg from 'src/resources/images/footer-img.png';
 import ArrowImg from 'src/resources/images/arrow.png';
 import Facebook from 'src/resources/images/facebook-footer.png'
 import LogoImg from 'src/resources/images/logo.png'
@@ -15,7 +14,6 @@ export default function Footer() {
 
     return (<>
         <div className={'grid grid-cols-1 ' + styles.footerImgDiv}>
-            <img className={styles.footerImgCover} src={FooterImg.src} alt="Footer-img"/>
             <div className={styles.footerNewsletter}>
                 <h2 className={styles.footerNewsletterH2}>Povežite se sa SUAIRom</h2>
                 <h3 className={styles.footerNewsletterH3}>Prijavite se na naše novosti</h3>
@@ -27,14 +25,14 @@ export default function Footer() {
         </div>
         <div className='px-4 mt-8 mx-auto lg:max-w-screen-2xl md:items-center md:px-8'>
             <div className='grid grid-cols-1'>
-                <div className='flex justify-between'>
+                <div className='flex sm:flex-row sm:justify-between flex-col items-center'>
                     <div className='flex items-center'>
                         <Link href='/'>
                         <img src={LogoImg.src} alt="logo"/>
                         </Link>
                     </div>
                     <div>
-                        <ul className='items-center justify-end py-3 space-y-8 md:flex md:space-x-6 md:space-y-0'>
+                        <ul className='items-center justify-end py-3 space-y-8 flex space-x-6 space-y-0'>
                             <li><a href=''> <img src={Facebook.src} alt="logo"/></a></li>
                             <li><a href=''> <img src={Twitter.src} alt="logo"/></a></li>
                             <li><a href=''> <img src={Youtube.src} alt="logo"/></a></li>
@@ -43,10 +41,10 @@ export default function Footer() {
                     </div>
                 </div>
                 <hr className='mt-5'/>
-                <div className={'grid grid-cols-6 mt-5 mb-5 ' + styles.footerEnd}>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+                <div className={'grid sm:grid-cols-6 grid-cols-3 mt-5 mb-5 ' + styles.footerEnd}>
+                    <div className="sm:block hidden"></div>
+                    <div className="sm:block hidden"></div>
+                    <div className="sm:block hidden"></div>
                     <Link href='/uslovi-koriscenja'><div>Uslovi korišćenja</div></Link>
                     <Link href='/politika-o-privatnosti'><div className={styles.footerEndDifferent}>Pravila o privatnosti</div></Link>
                     <div>© {copyright} SuAir. Sva prava reservisana</div>

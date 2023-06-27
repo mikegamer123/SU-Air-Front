@@ -6,13 +6,19 @@ import RegistrationImg from 'src/resources/images/reg-icon.png'
 import SearchImg from 'src/resources/images/ic-search-black.svg.png'
 import styles from './Navbar.module.css'
 import {useRouter} from 'next/router'
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 
 export default function Navbar() {
 
     const [navbar, setNavbar] = useState(false);
+    const [user, setUser] = useState(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+    }, []);
 
     function hideLoader() {
         // Get the .loading element
@@ -50,21 +56,21 @@ export default function Navbar() {
             <link rel="icon" href="/public/favicon.ico"/>
         </Head>
         <nav className="w-full bg-white shadow">
-            <div className="justify-between px-4 mx-auto lg:max-w-screen-2xl md:items-center md:flex md:px-8">
+            <div className="justify-between px-4 mx-auto lg:max-w-screen-2xl lg:items-center lg:flex lg:px-8">
                 <div>
-                    <div className="flex items-center justify-between py-3 md:py-5 md:block">
+                    <div className="flex items-center justify-between py-3 lg:py-5 lg:block">
                         <Link href="/">
                             <h2 className="text-2xl text-white font-bold"><img src={LogoImg.src} alt='LOGO'></img>
                             </h2>
                         </Link>
-                        <div className="md:hidden">
+                        <div className="lg:hidden">
                             <button
                                 className="p-2 text-gray-700 rounded-md outline-none focus:border-gray-400 focus:border"
                                 onClick={() => setNavbar(!navbar)}
                             >
                                 {navbar ? (<svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="w-6 h-6 text-white"
+                                    className="w-6 h-6 text-black"
                                     viewBox="0 0 20 20"
                                     fill="currentColor"
                                 >
@@ -75,7 +81,7 @@ export default function Navbar() {
                                     />
                                 </svg>) : (<svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="w-6 h-6 text-white"
+                                    className="w-6 h-6 text-black"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -92,33 +98,33 @@ export default function Navbar() {
                     </div>
                 </div>
                 <div
-                    className={`flex-1 justify-self-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${navbar ? 'block' : 'hidden'} ${styles.nav}`}
+                    className={`flex-1 justify-self-center pb-3 mt-8 lg:block lg:pb-0 lg:mt-0 ${navbar ? 'block' : 'hidden'} ${styles.nav}`}
                 >
-                    <ul className="items-center justify-end py-3 space-y-8 md:flex md:space-x-6 md:space-y-0">
+                    <ul className="items-center justify-end py-3 space-y-8 lg:flex lg:space-x-6 lg:space-y-0">
                         <li className={'text-black ' + styles.hoveredListItem}>
                             <Link href="/o-nama">
-                                        <span className={router.route === '/o-nama' ? styles.currentPage : ''}>
+                                        <span className={router.route.includes('/o-nama') ? styles.currentPage : ''}>
                                         O nama
                                             </span>
                             </Link>
                         </li>
                         <li className={'text-black ' + styles.hoveredListItem}>
                             <Link href="/heat-map/">
-                                         <span className={router.route === '/heat-map' ? styles.currentPage : ''}>
+                                         <span className={router.route.includes('/heat-map') ? styles.currentPage : ''}>
                                         Heat map
                                         </span>
                             </Link>
                         </li>
                         <li className={'text-black ' + styles.hoveredListItem}>
                             <Link href="/history">
-                                        <span className={router.route === '/history' ? styles.currentPage : ''}>
+                                        <span className={router.route.includes('/history') ? styles.currentPage : ''}>
                                         Istorija
                                             </span>
                             </Link>
                         </li>
                         <li className={'text-black ' + styles.hoveredListItem}>
                             <Link href="/faq">
-                                         <span className={router.route === '/faq' ? styles.currentPage : ''}>
+                                         <span className={router.route.includes('/faq') ? styles.currentPage : ''}>
                                         Česta pitanja
                                             </span>
                             </Link>
@@ -127,13 +133,13 @@ export default function Navbar() {
                 </div>
 
                 <div
-                    className={`flex-1 justify-self-center pb-3 mt-8 md:block md:pb-0 md:mt-0 ${navbar ? 'block' : 'hidden'} ${styles.nav}`}
+                    className={`flex-1 justify-self-center pb-3 mt-8 lg:block lg:pb-0 lg:mt-0 ${navbar ? 'block' : 'hidden'} ${styles.nav}`}
                 >
-                    <ul className="items-center justify-end py-3 space-y-8 md:flex md:space-x-6 md:space-y-0">
+                    <ul className="items-center justify-end py-3 space-y-8 lg:flex lg:space-x-6 lg:space-y-0">
                         <li className={'text-black ' + styles.hoveredListItem}>
-                            <div className={styles.searchBar}>
+                            <div className={"flex " + styles.searchBar}>
                                 <img className={styles.searchIcon} src={SearchImg.src} alt='Search Icon'></img>
-                                <input className={styles.searchInput} type='text'
+                                <input className={"w-full " + styles.searchInput} type='text'
                                        placeholder='Pretraga'></input>
                             </div>
                         </li>
@@ -143,7 +149,7 @@ export default function Navbar() {
                                     <img className={styles.registrationIcon} src={RegistrationImg.src}
                                          alt="Registration Icon"/>
                                     <span className={router.route === '/registration' ? styles.currentPage : ''}>
-                                            Registracija
+                                           { user ? user.name : "Registracija" }
                                             </span>
                                 </div>
                             </Link>

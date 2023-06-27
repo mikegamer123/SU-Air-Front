@@ -1,14 +1,22 @@
 import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer";
 import { showToast } from "@/toastHelper";
+import jwt from 'jsonwebtoken';
 import {BASE_API_URL} from '@/config';
 import React, { useEffect, useState } from 'react';
+import {useRouter} from "next/router";
 
 export default function Registration() {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+    }, []);
 
     const handleNameChange = (event) => {
         setName(event.target.value);
@@ -52,13 +60,36 @@ export default function Registration() {
                     });
                 } else {
                     showToast('Registracija neuspešna!', 'error');
-                    // Handle registration failure
                 }
             })
             .catch((error) => {
                 showToast('Error:' + error, 'error');
-                // Handle network error
             });
+    };
+
+    const handleLogout = (event) => {
+        try {
+            localStorage.removeItem("user");
+            localStorage.removeItem("login_token");
+            showToast('Uspešna odjava!<br>Prebacićemo vas na početnu stranicu');
+            setTimeout(function (){
+                window.location.href = '/';
+            },3000)
+
+        } catch (error) {
+            showToast('Error u odjavi:' + error.message, 'error');
+            return null;
+        }
+    };
+
+     const decodeJwtToken = (token) => {
+        try {
+            const decoded = jwt.decode(token);
+            return decoded;
+        } catch (error) {
+            showToast('Error decoding JWT token:' + error.message, 'error');
+            return null;
+        }
     };
 
     const handleSubmitLogin = (event) => {
@@ -79,7 +110,10 @@ export default function Registration() {
                 if (response.ok) {
                     response.json().then((json) => {
                         const {token} = json; // Access the 'token' property from the JSON response
+                        const decodedToken = decodeJwtToken(token);
+                        console.log(decodedToken)
                         localStorage.setItem('login_token', token); // Save the token to localStorage with the key 'login_token'
+                        localStorage.setItem('user', JSON.stringify(decodedToken)); // Save the token to localStorage with the key 'login_token'
                         showToast('Login uspešan!<br>Prebacićemo vas na početnu stranicu');
                         setTimeout(function (){
                             window.location.href = '/';
@@ -102,6 +136,7 @@ export default function Registration() {
     return (
         <>
             <Navbar/>
+            {!user ? (<>
             <p className='text-2xl mt-5 text-center font-bold'>PRIJAVA</p>
             <div className='flex justify-center'>
                 <div className="w-full max-w-lg mt-4">
@@ -122,9 +157,9 @@ export default function Registration() {
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                                 id="password" value={password} onChange={handlePasswordChange}  type="password"  placeholder="******************" />
                         </div>
-                        <div className="flex items-center justify-between flex-wrap">
+                        <div className="flex items-center sm:justify-between justify-center flex-wrap">
                             <button
-                                className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 my-2 rounded focus:outline-none focus:shadow-outline"
                                 type="submit">
                                 Prijavi se
                             </button>
@@ -193,7 +228,19 @@ export default function Registration() {
                         </div>
                     </form>
                 </div>
-            </div>
+            </div></>
+                ) : (
+                <><div>
+                    <p className='text-2xl my-5 text-center font-bold'>Odjava</p>
+                                <div className="flex items-center justify-center">
+                                    <button
+                                        className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 my-6 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        type="button" onClick={handleLogout}>
+                                        Izloguj se
+                                    </button>
+                                </div>
+                    </div></>
+                )}
 
             <Footer/>
         </>

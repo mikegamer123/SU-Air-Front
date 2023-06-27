@@ -3,83 +3,512 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --main-bg: 252, 252, 252;
+    --foreground-rgb: 0, 0, 0;
+    --main-bg: 252, 252, 252;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--main-bg));
-  overflow-x: hidden;
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--main-bg));
+    overflow-x: hidden;
 }
 
 /* Define keyframes */
 @keyframes show-spinner {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 /* Apply keyframes to loading spinner */
 .loading {
-  position: fixed;
-  z-index: 999;
-  height: 2em;
-  width: 2em;
-  margin: auto;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  animation-name: show-spinner; /* Apply the keyframe animation */
-  animation-duration: 2s; /* Set the animation duration to 2 seconds */
-  animation-iteration-count: 1; /* Set the animation iteration count to 1 */
-  animation-fill-mode: forwards; /* Keep the element in its end state after the animation */
+    position: fixed;
+    z-index: 9999;
+    height: 2em;
+    width: 2em;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    animation-name: show-spinner; /* Apply the keyframe animation */
+    animation-duration: 2s; /* Set the animation duration to 2 seconds */
+    animation-iteration-count: 1; /* Set the animation iteration count to 1 */
+    animation-fill-mode: forwards; /* Keep the element in its end state after the animation */
 }
 
 /* Apply keyframes to transparent overlay */
 .loading:before {
-  content: '';
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(rgba(20, 20, 20,1), rgba(0, 0, 0, 1));
-  background: -webkit-radial-gradient(rgba(20, 20, 20,1), rgba(0, 0, 0,1));
-  animation-name: show-spinner; /* Apply the keyframe animation */
-  animation-duration: 2s; /* Set the animation duration to 2 seconds */
-  animation-iteration-count: 1; /* Set the animation iteration count to 1 */
-  animation-fill-mode: forwards; /* Keep the element in its end state after the animation */
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(rgba(20, 20, 20, 1), rgba(0, 0, 0, 1));
+    background: -webkit-radial-gradient(rgba(20, 20, 20, 1), rgba(0, 0, 0, 1));
+    animation-name: show-spinner; /* Apply the keyframe animation */
+    animation-duration: 2s; /* Set the animation duration to 2 seconds */
+    animation-iteration-count: 1; /* Set the animation iteration count to 1 */
+    animation-fill-mode: forwards; /* Keep the element in its end state after the animation */
 }
 
 
-.loading-img-cont{
-  width: 200px;
-  position: relative;
+.loading-img-cont {
+    width: 200px;
+    position: relative;
 }
 
-.loading-img{
-  z-index: 10;
-  width: 50%;
+.loading-img {
+    width: 50%;
+    z-index: 9999;
 }
 
-.centerSlugDiv{
-  width: 1000px;
-  margin-right: auto !important;
-  margin-left: auto !important;
+.heatMapHeader {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.heatMapHeader .updated {
+    width: 100%;
+    font-size: 12px;
+}
+
+.heatMapHeader .header {
+    display: flex;
+    flex-wrap: wrap;
+    width: 85%;
+}
+
+.heatMapHeader .mainHeader {
+    color: #009988;
+    font-family: 'Arial';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 42px;
+    width: 100%;
+}
+
+.locateBtn {
+    color: white !important;
+    display: flex;
+    background: #009988;
+    border-radius: 4px;
+    text-align: center;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    height: fit-content;
+    cursor: pointer;
+}
+
+.locateBtn img {
+    padding: 10px;
+}
+
+.locateBtn span {
+    padding: 10px;
+    padding-left: 4px;
 }
 
 .toast-active {
-  right: 80px!important;
-  opacity: 100%!important;
+    right: 80px !important;
+    opacity: 100% !important;
+    display: flex!important;
 }
 
+.districtsDiv {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
+.districtCard:hover .overlayDistricts {
+    opacity: 1;
+    background-color: #009988;
+}
+
+.districtCard:hover .overlayText {
+    opacity: 1;
+}
+
+.districtCard:hover .districtText {
+    top: 30%;
+}
+
+.districtCard {
+    margin: 20px;
+    position: relative;
+}
+
+.districtText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    text-align: center;
+    font-size: 25px;
+    color: white;
+    text-shadow: 1px 2px #000000;
+    transform: translate(-50%, -50%);
+    transition: 0.4s ease;
+}
+
+.overlayDistricts {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0.4;
+    transition: .5s ease;
+    background-color: #000000;
+}
+
+.overlayText {
+    color: white;
+    width: 100%;
+    font-weight: bold;
+    font-size: 23px;
+    position: absolute;
+    text-shadow: 1px 2px #000000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    opacity: 0;
+}
+
+.stationNav {
+    display: flex;
+    font-size: 15px;
+    font-family: 'Roboto';
+    font-style: normal;
+}
+
+.stationDiv {
+    display: flex;
+    background: rgba(204, 212, 224, 0.24);
+    border-radius: 4px;
+}
+
+.stationDiv .stationImg {
+    padding: 10px;
+    padding-right: 4px;
+}
+
+.stationDiv .stationText {
+    padding: 10px;
+    padding-left: 4px;
+    font-weight: 700;
+}
+
+.stationNav span {
+    padding: 10px;
+}
+
+.stationNavCity:after {
+    content: '>';
+    margin-left: 15px;
+    font-size: 10px;
+}
+
+.aqiLive {
+    background: #FDD64B;
+    border-radius: 4px;
+    width: fit-content;
+    display: flex;
+    font-size: 14px;
+    position: absolute;
+    z-index: 1000;
+    left: 10.5%;
+    top: 2%;
+}
+
+.aqiLiveNumber {
+    text-align: center;
+    background: #EFBE1D;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    padding: 10px 20px;
+    margin: 22px;
+}
+
+.aqiLiveNumber span {
+    font-size: 50px;
+}
+
+.aqiLiveDescription {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0px;
+    margin: 22px;
+    margin-top: 36px;
+}
+
+.aqiLiveDescription span {
+    font-size: 30px;
+}
+
+.centerSlugDiv {
+    position: relative;
+}
+
+.dataLive {
+    background: #009988;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: 10.5%;
+    top: 2%;
+    z-index: 1000;
+    color: white;
+    width: 232px;
+    padding: 20px;
+}
+
+.dataLive hr {
+    border-color: rgba(255, 255, 255, 0.30);
+    margin: 10px 0px;
+}
+
+.dataLive .header {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 20px;
+}
+
+.dataLive .header span:nth-child(2) {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.getWeather {
+    cursor: pointer;
+    font-size: 12px;
+    text-align: right;
+}
+
+.weatherTemp {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.detailBtn {
+    background: #028C7D;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    text-transform: uppercase;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.legendLive {
+    background: rgba(0, 153, 136, 0.5);
+    border-radius: 4px;
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9998;
+}
+
+.legendLive div div {
+    text-align: center;
+    padding: 10px;
+}
+
+.legendLive div div:nth-child(1) {
+    background: #9CD84E;
+}
+
+.legendLive div div:nth-child(2) {
+    background: #FACF39;
+}
+
+.legendLive div div:nth-child(3) {
+    background: #F99049;
+}
+
+.legendLive div div:nth-child(4) {
+    background: #F65E5F;
+    color: white;
+}
+
+.legendLive div div:nth-child(5) {
+    background: #A070B6;
+    color: white;
+}
+
+.legendLive div div:nth-child(6) {
+    background: #A06A7B;
+    color: white;
+}
+
+.leaflet-control-attribution {
+    margin-bottom: 50px !important;
+}
+
+.analyseDiv {
+    position: relative;
+    z-index: 999;
+    transform: translate(0px, -40px);
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+}
+
+.analyseDiv .details {
+    width: 70%;
+    padding: 20px;
+}
+
+.analyseDiv h1 {
+    text-transform: uppercase;
+    font-size: 12px;
+    color: #009988;
+    font-weight: 700;
+}
+
+.analyseDiv h2 {
+    font-size: 14px;
+}
+
+.analyseDiv .details thead {
+    text-align: left;
+    font-size: 12px;
+    color: #414141;
+}
+
+.analyseDiv .details thead th {
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.analyseDiv .details tbody td {
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 10px;
+}
+
+.analyseDiv .details tbody {
+    margin-top: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.aqiSlug {
+    padding: 10px;
+    border-radius: 4px;
+    color: #607631;
+}
+
+.yellow {
+    background: #FDD64B;
+}
+
+.d-initial {
+    display: initial;
+}
+.mobileApp{
+    width: 30%;
+    background: #FCFCFC;
+}
+.appImg{
+    background-image: url("http://localhost:3000/appImg.png");
+    width: 100%;
+    height: 615px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 22%;
+    position: relative;
+}
+
+.appImg h1{
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 24px;
+}
+.appImg h2{
+    text-align: center;
+    color: #FFFFFF;
+}
+.appImg .appButton{
+    color: #FFFFFF;
+    text-align: center;
+    border: 2px solid white;
+    position: absolute;
+    width: 200px;
+    bottom: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+}
+
+.today{
+    background: #F3F7FB;
+    box-shadow: inset 2px 0px 0px #499FBC;
+}
+
+.chartDiv .button{
+    background: white;
+    border: 1px solid #456E98;
+    border-radius: 4px;
+    color: #009988;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.chartDiv .active{
+    background: #028C7D!important;
+    border: 1px solid #456E98!important;
+    border-radius: 4px!important;
+    color:white!important;
+}
+
+.chartDiv .chart{
+    background: #F6FAFB;
+    padding: 20px;
+}
+.leaflet-control-zoom{
+    border: none!important;
+    margin-bottom: 40px!important;
+}
+.leaflet-control-zoom-in{
+    background: #FFFFFF;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    border-bottom-left-radius: 16px!important;
+    border-bottom-right-radius: 16px!important;
+    border-top-left-radius: 16px!important;
+    border-top-right-radius: 16px!important;
+    margin-bottom: 10px;
+}
+.leaflet-control-zoom-out{
+    border-bottom-left-radius: 16px!important;
+    border-bottom-right-radius: 16px!important;
+    border-top-left-radius: 16px!important;
+    border-top-right-radius: 16px!important;
+    background: #FFFFFF;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.leaflet-control-zoom-out span, .leaflet-control-zoom-in span{
+    color:#009988;
+}
