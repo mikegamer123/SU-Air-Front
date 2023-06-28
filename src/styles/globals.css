@@ -226,7 +226,6 @@ body {
     background: #FDD64B;
     border-radius: 4px;
     width: fit-content;
-    display: flex;
     font-size: 14px;
     position: absolute;
     z-index: 1000;
@@ -268,7 +267,6 @@ body {
 .dataLive {
     background: #009988;
     border-radius: 4px;
-    display: flex;
     flex-direction: column;
     position: absolute;
     right: 10.5%;
@@ -377,7 +375,6 @@ body {
 }
 
 .analyseDiv .details {
-    width: 70%;
     padding: 20px;
 }
 
@@ -427,7 +424,6 @@ body {
     display: initial;
 }
 .mobileApp{
-    width: 30%;
     background: #FCFCFC;
 }
 .appImg{
@@ -511,4 +507,35 @@ body {
 
 .leaflet-control-zoom-out span, .leaflet-control-zoom-in span{
     color:#009988;
+}
+
+.mobile {
+    width: 80%;
+    position: relative;
+    left: 0;
+    top: 0;
+    margin: 0px auto;
+    justify-content: center;
+}
+
+@media (max-width: 1300px) {
+    .legendLive div div{
+    font-size: 12px;
+    }
+}
+@media (max-width: 1020px) {
+    .legendLive{
+        background: rgba(0, 153, 136, 0.5);
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        z-index: 9998;
+    }
+    .legendLive div div{
+        padding: 0px;
+        min-width: 50px;
+        min-height: 20px;
+    }
 }

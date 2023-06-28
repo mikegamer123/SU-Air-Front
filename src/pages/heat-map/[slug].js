@@ -128,14 +128,12 @@ export default function Page() {
                         <span
                             className="helpingHeader">Indeks kvaliteta vazduha (AKI) i zagađenje vazduha PM 2,5 kod {matchedDistrict ? matchedDistrict.name : ""}, Subotica</span>
                     </div>
-                    <div className="locateBtn my-4" onClick={handleLocateClick}>
+                    <div className="locateBtn lg:m-0 m-auto my-4" onClick={handleLocateClick}>
                         <img src={locateIcon.src} alt="lociraj ikonica"></img>
                         <span>Lociraj me</span>
                     </div>
                 </div>
-            </div>
-            <div className='centerSlugDiv'>
-                <div className="aqiLive">
+                <div className="aqiLive mobile flex lg:hidden !mb-8">
                     <div className="aqiLiveNumber">
                         {"US AQI"}
                         <span>{"56"}</span>
@@ -145,7 +143,61 @@ export default function Page() {
                         <span>{"Umereno"}</span>
                     </div>
                 </div>
-                <div className="dataLive">
+
+                <div className="dataLive mobile flex lg:hidden !mb-8">
+                    <div className="header">
+                        <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
+                        <span>Subotica <br/> {"12:00 Apr 24"}</span>
+                    </div>
+                    <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
+                    <hr/>
+                    <div className="weatherTemp">
+                        <div className="flex flex-row"><img src={rainIcon.src}/> <span className="mt-2">{"12.4°"}</span>
+                        </div>
+                        <div className="mt-2 h-full">{"Kiša"}</div>
+                    </div>
+                    <div className="flex flex-col weatherDetails">
+                        <div className="flex justify-between">
+                            <span>Vlažnost</span>
+                            <div className="flex flex-row justify-between w-20"><img width="20px"
+                                                                                     src={humidityIcon.src}/>
+                                <span>{"81"}%</span></div>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Vetar</span>
+                            <div className="flex flex-row justify-between w-20"><img width="20px" src={windIcon.src}/>
+                                <span>{"9.8"}<small>mp/h</small></span></div>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Pritisak</span>
+                            <div className="flex flex-row justify-between w-20"><img width="20px"
+                                                                                     src={pressureIcon.src}/>
+                                <span>{"29.8"}<small>Hg</small></span></div>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div className="hourlyDetail flex flex-col">
+                        <span className="text-left">Prošla 24 sata</span>
+                        <div className='chartMiniData'>
+                            <BarChart chartData={chartData}/>
+                        </div>
+                        <div className="detailBtn text-center mt-10">Pogledajte detalje</div>
+                    </div>
+                </div>
+
+            </div>
+            <div className='centerSlugDiv'>
+                <div className="aqiLive  lg:flex hidden">
+                    <div className="aqiLiveNumber">
+                        {"US AQI"}
+                        <span>{"56"}</span>
+                    </div>
+                    <div className="aqiLiveDescription">
+                        Uživo AQI index
+                        <span>{"Umereno"}</span>
+                    </div>
+                </div>
+                <div className="dataLive lg:flex hidden">
                     <div className="header">
                         <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
                         <span>Subotica <br/> {"12:00 Apr 24"}</span>
@@ -188,22 +240,22 @@ export default function Page() {
                 <div className="legendLive">
                     <div className="flex flex-row my-2 mx-5">
                         <div>
-                            Dobar
+                            <span  className="lg:block hidden">Dobar</span>
                         </div>
                         <div>
-                            Umereno
+                            <span  className="lg:block hidden">Umereno</span>
                         </div>
                         <div>
-                            Nezdravo za osetljive grupe
+                            <span  className="lg:block hidden">Nezdravo za osetljive grupe</span>
                         </div>
                         <div>
-                            Nezdravo
+                           <span  className="lg:block hidden"> Nezdravo</span>
                         </div>
                         <div>
-                            Vrlo nezdravo
+                            <span  className="lg:block hidden">Vrlo nezdravo</span>
                         </div>
                         <div>
-                            Opasno
+                            <span  className="lg:block hidden">Opasno</span>
                         </div>
                     </div>
                 </div>
@@ -211,8 +263,8 @@ export default function Page() {
             </div>
             <div className="px-4 mx-auto lg:max-w-screen-2xl md:px-8">
                 <div className="slugSection">
-                    <div className="analyseDiv flex flex-row">
-                        <div className="details flex flex-col">
+                    <div className="analyseDiv flex md:flex-row flex-col">
+                        <div className="details flex flex-col md:w-2/3 w-full">
                             <h1>Prognoza</h1>
                             <h2 className="pt-2 pb-8">Kod
                                 Subotica, {matchedDistrict ? matchedDistrict.name : ""} kvalitet vazduha (AQI)</h2>
@@ -333,7 +385,7 @@ export default function Page() {
                                 </div>
                             </div>
                         </div>
-                        <div className="mobileApp px-4 py-4">
+                        <div className="mobileApp px-4 py-4 md:w-1/3 w-full">
                             <div className="appImg">
                                 <h1>SUAIR APP</h1>
                                 <h2 className="mt-2">Besplatna iOS i Android aplikacija za kvalitet vazduha</h2>

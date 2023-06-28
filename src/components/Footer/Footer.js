@@ -33,7 +33,7 @@ export default function Footer() {
                     </div>
                     <div>
                         <ul className='items-center justify-end py-3 space-y-8 flex space-x-6 space-y-0'>
-                            <li><a href=''> <img src={Facebook.src} alt="logo"/></a></li>
+                            <li className="ml-6 mt-8"><a href=''> <img src={Facebook.src} alt="logo"/></a></li>
                             <li><a href=''> <img src={Twitter.src} alt="logo"/></a></li>
                             <li><a href=''> <img src={Youtube.src} alt="logo"/></a></li>
                             <li><a href=''> <img src={Instagram.src} alt="logo"/></a></li>
