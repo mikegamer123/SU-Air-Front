@@ -235,7 +235,6 @@ body {
 
 .aqiLiveNumber {
     text-align: center;
-    background: #EFBE1D;
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -418,6 +417,30 @@ body {
 
 .yellow {
     background: #FDD64B;
+}
+
+.dobar {
+    background: #9CD84E;
+}
+
+.umereno {
+    background: #FACF39;
+}
+
+.nezdravoOs {
+    background: #F99049;
+}
+
+.nezdravo {
+    background: #F65E5F;
+}
+
+.vrloNezdravo {
+    background: #A070B6;
+}
+
+.opasno {
+    background: #A06A7B;
 }
 
 .d-initial {

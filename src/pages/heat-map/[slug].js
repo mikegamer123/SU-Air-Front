@@ -11,8 +11,11 @@ import stationIcon from "@/resources/images/ic-location-station.svg.svg";
 import DynamicMap from "@/components/Map/DynamicMap";
 import {useRouter} from "next/router";
 import {showToast} from "@/toastHelper";
+import {qualityColor, qualityText, weatherMap, weatherIconMap, BASE_WEATHER_URL} from "@/config";
 import React, {useEffect, useState} from 'react';
 import BarChart from "@/components/BarChart/BarChart";
+import {validateConfig} from "next/dist/server/config-shared";
+import {formatDateToSerbian} from "@/dateHelper";
 
 export default function Page() {
     const Data = [
@@ -77,8 +80,77 @@ export default function Page() {
 
     const router = useRouter();
     const slug = router.query.slug;
-    const districts = JSON.parse(typeof window !== 'undefined' && localStorage.getItem("districts"));
-    const matchedDistrict = districts ? districts.find(district => district.slug === slug) : [];
+    const [hourlyWeather, setHourlyWeather] = useState(null);
+    const [dailyWeather, setDailyWeather] = useState(null);
+    const [currentHourIndex, setCurrentHourIndex] = useState(null);
+    const [windDirection, setWindDirection] = useState(null);
+    const [districts, setDistricts] = useState(null);
+    const [sensors, setSensors] = useState(null);
+    const [matchedDistrict, setMatchedDistrict] = useState(null);
+    const [matchedSensor, setMatchedSensor] = useState(null);
+
+    useEffect(() => {
+        // Fetch data from localStorage and parse it
+        const storedDistricts = JSON.parse(localStorage.getItem("districts"));
+        const storedSensors = JSON.parse(localStorage.getItem("sensors"));
+
+        // Update the state variables with the parsed data
+        setDistricts(storedDistricts || []);
+        setSensors(storedSensors || []);
+    }, []);
+
+    useEffect(() => {
+        // Find the matched district based on the slug
+        const matchedDistrict = districts ? districts.find(district => district.slug === slug) : null;
+        setMatchedDistrict(matchedDistrict || null);
+    }, [districts, slug]);
+
+    useEffect(() => {
+        // Get the first sensor from the sensors array
+        const firstSensor = sensors ? sensors[0] : null;
+        setMatchedSensor(firstSensor);
+    }, [sensors]);
+
+    function getLowestKey(map, givenValue = matchedSensor ? matchedSensor.particular_matter_25.aqi_us_ranking : ""){
+        let result = null;
+        for (const [key, value] of map.entries()) {
+            if (key < givenValue) {
+                result = value;
+                break;
+            }
+        }
+        return result;
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const apiUrl = BASE_WEATHER_URL;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                const { hourly, daily } = data;
+
+                // Sort the hourly weather data by time
+                hourly.time.sort((a, b) => new Date(a) - new Date(b));
+                setHourlyWeather(hourly);
+
+                // Sort the daily weather data by time
+                daily.time.sort((a, b) => new Date(a) - new Date(b));
+                setDailyWeather(daily);
+                console.log(dailyWeather);
+                // Get the current hour and find its index in the hourly weather data
+                const currentHour = new Date().toISOString().slice(0, 13) + ':00';
+                const currentIndex = hourly.time.findIndex((time) => time === currentHour);
+                setCurrentHourIndex(currentIndex);
+                setWindDirection(hourlyWeather.winddirection_10m[currentIndex] + 180);
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
         if (userLocation) {
@@ -120,7 +192,7 @@ export default function Page() {
                 </div>
                 <div className="heatMapHeader">
                     <div className="updated mb-3">
-                        <b>Ažurirano u</b> {"12:00, Apr 24"}
+                        <b>Ažurirano u</b> <div>{matchedSensor ? new Date(new Date(matchedSensor.cron_job_timestamp).getTime() - 2 * 60 * 60 * 1000).toLocaleString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '') : ""} </div>
                     </div>
                     <div className="header mb-3">
                         <span
@@ -133,46 +205,46 @@ export default function Page() {
                         <span>Lociraj me</span>
                     </div>
                 </div>
-                <div className="aqiLive mobile flex lg:hidden !mb-8">
+                <div className={"aqiLive mobile flex lg:hidden !mb-8 " + getLowestKey(qualityColor)}>
                     <div className="aqiLiveNumber">
                         {"US AQI"}
-                        <span>{"56"}</span>
+                        <span>{matchedSensor ? matchedSensor.particular_matter_25.aqi_us_ranking : ""}</span>
                     </div>
                     <div className="aqiLiveDescription">
                         Uživo AQI index
-                        <span>{"Umereno"}</span>
+                        <span>{getLowestKey(qualityText)}</span>
                     </div>
                 </div>
 
                 <div className="dataLive mobile flex lg:hidden !mb-8">
                     <div className="header">
                         <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
-                        <span>Subotica <br/> {"12:00 Apr 24"}</span>
+                        <span>Subotica <br/> {matchedSensor ? (new Date(new Date(matchedSensor.cron_job_timestamp).getTime() - 2 * 60 * 60 * 1000).toLocaleString("en-GB", { hour: 'numeric', minute: 'numeric', month: 'short', day: 'numeric' })) : ""}</span>
                     </div>
                     <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
                     <hr/>
                     <div className="weatherTemp">
-                        <div className="flex flex-row"><img src={rainIcon.src}/> <span className="mt-2">{"12.4°"}</span>
+                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? hourlyWeather.temperature_2m[currentHourIndex] : "") + "°"}</span>
                         </div>
-                        <div className="mt-2 h-full">{"Kiša"}</div>
+                        <div className="mt-2 h-full text-center">{weatherMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}</div>
                     </div>
                     <div className="flex flex-col weatherDetails">
                         <div className="flex justify-between">
                             <span>Vlažnost</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={humidityIcon.src}/>
-                                <span>{"81"}%</span></div>
+                                <span>{matchedSensor ? Math.round(matchedSensor.humidity) : ""}%</span></div>
                         </div>
                         <div className="flex justify-between">
                             <span>Vetar</span>
-                            <div className="flex flex-row justify-between w-20"><img width="20px" src={windIcon.src}/>
-                                <span>{"9.8"}<small>mp/h</small></span></div>
+                            <div className="flex flex-row justify-between w-20"><img width="20px" src={windIcon.src} style={{  transform: `rotate(${windDirection ? windDirection : 0}deg)` }} />
+                                <span>{(hourlyWeather ? hourlyWeather.windspeed_10m[currentHourIndex] : "")}<small>km/h</small></span></div>
                         </div>
                         <div className="flex justify-between">
                             <span>Pritisak</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={pressureIcon.src}/>
-                                <span>{"29.8"}<small>Hg</small></span></div>
+                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure) * 0.030 : ""}<small>Hg</small></span></div>
                         </div>
                     </div>
                     <hr/>
@@ -187,45 +259,45 @@ export default function Page() {
 
             </div>
             <div className='centerSlugDiv'>
-                <div className="aqiLive  lg:flex hidden">
+                <div className={"aqiLive  lg:flex hidden " + getLowestKey(qualityColor)}>
                     <div className="aqiLiveNumber">
                         {"US AQI"}
-                        <span>{"56"}</span>
+                        <span>{matchedSensor ? matchedSensor.particular_matter_25.aqi_us_ranking : ""}</span>
                     </div>
                     <div className="aqiLiveDescription">
                         Uživo AQI index
-                        <span>{"Umereno"}</span>
+                        <span>{getLowestKey(qualityText)}</span>
                     </div>
                 </div>
                 <div className="dataLive lg:flex hidden">
                     <div className="header">
                         <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
-                        <span>Subotica <br/> {"12:00 Apr 24"}</span>
+                        <span>Subotica <br/> {matchedSensor ? (new Date(new Date(matchedSensor.cron_job_timestamp).getTime() - 2 * 60 * 60 * 1000).toLocaleString("en-GB", { hour: 'numeric', minute: 'numeric', month: 'short', day: 'numeric' })) : ""}</span>
                     </div>
                     <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
                     <hr/>
                     <div className="weatherTemp">
-                        <div className="flex flex-row"><img src={rainIcon.src}/> <span className="mt-2">{"12.4°"}</span>
+                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? hourlyWeather.temperature_2m[currentHourIndex] : "") + "°"}</span>
                         </div>
-                        <div className="mt-2 h-full">{"Kiša"}</div>
+                        <div className="mt-2 h-full text-center">{weatherMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}</div>
                     </div>
                     <div className="flex flex-col weatherDetails">
                         <div className="flex justify-between">
                             <span>Vlažnost</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={humidityIcon.src}/>
-                                <span>{"81"}%</span></div>
+                                <span>{matchedSensor ? Math.round(matchedSensor.humidity) : ""}%</span></div>
                         </div>
                         <div className="flex justify-between">
                             <span>Vetar</span>
-                            <div className="flex flex-row justify-between w-20"><img width="20px" src={windIcon.src}/>
-                                <span>{"9.8"}<small>mp/h</small></span></div>
+                            <div className="flex flex-row justify-between w-20"><img width="20px" src={windIcon.src} style={{  transform: `rotate(${windDirection ? windDirection : 0}deg)` }}/>
+                                <span>{(hourlyWeather ? hourlyWeather.windspeed_10m[currentHourIndex] : "")}<small>km/h</small></span></div>
                         </div>
                         <div className="flex justify-between">
                             <span>Pritisak</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={pressureIcon.src}/>
-                                <span>{"29.8"}<small>Hg</small></span></div>
+                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure) * 0.030 : ""}<small>Hg</small></span></div>
                         </div>
                     </div>
                     <hr/>
@@ -279,94 +351,29 @@ export default function Page() {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>{"Petak, Apr 21"}</td>
+                                {dailyWeather ? dailyWeather.time.map((date, index) => (
+                                <tr className={"" + index == 0 ? "today" : ""} key={date}>
+                                    <td>{index == 0 ? "Danas" : formatDateToSerbian(date)}</td>
                                     <td className="pr-4">
                                         <div className="flex flex-row justify-between aqiSlug yellow">
                                         <span>
-                                            {"Petak, Apr 21"}
+                                            {index == 0 ? "Danas" : formatDateToSerbian(date)}
                                         </span>
                                             <span>
                                                 {"61 US AQI"}
                                             </span>
                                         </div>
                                     </td>
-                                    <td><img className="d-initial" src={rainIcon.src}/> {"  " + "90%"}</td>
+                                    <td><img className="d-initial" width="25%" src={weatherIconMap.get(dailyWeather ? dailyWeather.weathercode[index] : 0)}/> {"  " + dailyWeather.precipitation_probability_max[index] + "%"}</td>
                                     <td>
-                                        <span className="mr-4 font-bold">{"16°"}</span>
-                                        <span>{"17.6°"}</span>
-                                    </td>
-                                    <td>
-                                        <img className="d-initial" src={windBlackIcon.src} alt="windIcon"/>
-                                        {"  " + "3.72 km/h"}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>{"Petak, Apr 21"}</td>
-                                    <td className="pr-4">
-                                        <div className="flex flex-row justify-between aqiSlug yellow">
-                                        <span>
-                                            {"Petak, Apr 21"}
-                                        </span>
-                                            <span>
-                                                {"61 US AQI"}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td><img className="d-initial" src={rainIcon.src}/> {"  " + "90%"}</td>
-                                    <td>
-                                        <span className="mr-4 font-bold">{"16°"}</span>
-                                        <span>{"17.6°"}</span>
+                                        <span className="mr-4 font-bold">{Math.round(dailyWeather.temperature_2m_min[index]) + "°"}</span>
+                                        <span>{Math.round(dailyWeather.temperature_2m_max[index]) +"°"}</span>
                                     </td>
                                     <td>
                                         <img className="d-initial" src={windBlackIcon.src} alt="windIcon"/>
-                                        {"  " + "3.72 km/h"}
+                                        {"  " + dailyWeather.windspeed_10m_max[index] + "km/h"}
                                     </td>
-                                </tr>
-                                <tr className="today">
-                                    <td>{"Petak, Apr 21"}</td>
-                                    <td className="pr-4">
-                                        <div className="flex flex-row justify-between aqiSlug yellow">
-                                        <span>
-                                            {"Petak, Apr 21"}
-                                        </span>
-                                            <span>
-                                                {"61 US AQI"}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td><img className="d-initial" src={rainIcon.src}/> {"  " + "90%"}</td>
-                                    <td>
-                                        <span className="mr-4 font-bold">{"16°"}</span>
-                                        <span>{"17.6°"}</span>
-                                    </td>
-                                    <td>
-                                        <img className="d-initial" src={windBlackIcon.src} alt="windIcon"/>
-                                        {"  " + "3.72 km/h"}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>{"Petak, Apr 21"}</td>
-                                    <td className="pr-4">
-                                        <div className="flex flex-row justify-between aqiSlug yellow">
-                                        <span>
-                                            {"Petak, Apr 21"}
-                                        </span>
-                                            <span>
-                                                {"61 US AQI"}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td><img className="d-initial" src={rainIcon.src}/> {"  " + "90%"}</td>
-                                    <td>
-                                        <span className="mr-4 font-bold">{"16°"}</span>
-                                        <span>{"17.6°"}</span>
-                                    </td>
-                                    <td>
-                                        <img className="d-initial" src={windBlackIcon.src} alt="windIcon"/>
-                                        {"  " + "3.72 km/h"}
-                                    </td>
-                                </tr>
+                                </tr> )) : ""}
                                 </tbody>
                             </table>
                             <div className="chartDiv mt-16">

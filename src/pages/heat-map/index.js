@@ -26,23 +26,22 @@ export default function Index() {
 
     //load latest from all stations
     useEffect(() => {
-        fetch('https://suair-backend-production.up.railway.app/AQI/get/all', {
+        const url = new URL(BASE_API_URL + '/AQI/get/all');
+        url.searchParams.append('generateCSV', 'false');
+        url.searchParams.append('model_name', 'Hour');
+
+        fetch(url.toString(), {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem("login_token")
-            },
-            body: JSON.stringify({
-                generateCSV: false,
-                model_name: 'Day'
-            })
+            }
         })
             .then(response => response.json())
             .then(data => {
-                const jsonData = data.result;
-                const dataArray = JSON.parse(jsonData);
+                const jsonData = data;
 
-                const groupedData = dataArray.reduce((groups, item) => {
+                const groupedData = jsonData.reduce((groups, item) => {
                     const groupName = item.name;
                     if (!groups[groupName]) {
                         groups[groupName] = [];
@@ -62,8 +61,7 @@ export default function Index() {
                 });
 
                 setLatestData(latestData);
-                console.log(latestData);
-                localStorage.setItem('districts', JSON.stringify(latestData));
+                localStorage.setItem('sensors', JSON.stringify(latestData));
             })
             .catch(error => {
                 console.error('Error:', error);
