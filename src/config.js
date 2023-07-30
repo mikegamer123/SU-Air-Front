@@ -25,6 +25,14 @@ qualityColor.set(30, 'nezdravo');
 qualityColor.set(20, 'vrloNezdravo');
 qualityColor.set(10, 'opasno');
 
+export const qualityColorVals = new Map();
+qualityColorVals.set(75, '#9CD84E');
+qualityColorVals.set(55, '#FACF39');
+qualityColorVals.set(40, '#F99049');
+qualityColorVals.set(30, '#F65E5F');
+qualityColorVals.set(20, '#A070B6');
+qualityColorVals.set(10, '#A06A7B');
+
 //weather descriptions
 export const weatherMap = new Map([
     [0, 'Vedro nebo'],

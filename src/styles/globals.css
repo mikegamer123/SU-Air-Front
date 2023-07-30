@@ -199,6 +199,11 @@ body {
     display: flex;
     background: rgba(204, 212, 224, 0.24);
     border-radius: 4px;
+    cursor: pointer;
+}
+
+.stationDistrict{
+    cursor: pointer;
 }
 
 .stationDiv .stationImg {
@@ -539,6 +544,28 @@ body {
     top: 0;
     margin: 0px auto;
     justify-content: center;
+}
+
+@keyframes bouncy {
+    0% {
+        top: 0;
+    }
+    25% {
+        top: -5px;
+    }
+    50% {
+        top: 0;
+    }
+    75% {
+        top: -5px;
+    }
+    100% {
+        top: 0;
+    }
+}
+
+.bouncy-animation {
+    animation: bouncy 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
 }
 
 @media (max-width: 1300px) {

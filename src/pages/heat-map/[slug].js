@@ -16,6 +16,7 @@ import React, {useEffect, useState} from 'react';
 import BarChart from "@/components/BarChart/BarChart";
 import {validateConfig} from "next/dist/server/config-shared";
 import {formatDateToSerbian} from "@/dateHelper";
+import {findClosestObject} from "@/findClosestHelper";
 
 export default function Page() {
     const Data = [
@@ -80,6 +81,7 @@ export default function Page() {
 
     const router = useRouter();
     const slug = router.query.slug;
+    const [user, setUser] = useState(null);
     const [hourlyWeather, setHourlyWeather] = useState(null);
     const [dailyWeather, setDailyWeather] = useState(null);
     const [currentHourIndex, setCurrentHourIndex] = useState(null);
@@ -88,6 +90,11 @@ export default function Page() {
     const [sensors, setSensors] = useState(null);
     const [matchedDistrict, setMatchedDistrict] = useState(null);
     const [matchedSensor, setMatchedSensor] = useState(null);
+
+    useEffect(() => {
+        const storedUser = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('user-loc')) : null;
+        setUser(storedUser);
+    }, []);
 
     useEffect(() => {
         // Fetch data from localStorage and parse it
@@ -106,9 +113,9 @@ export default function Page() {
     }, [districts, slug]);
 
     useEffect(() => {
-        // Get the first sensor from the sensors array
-        const firstSensor = sensors ? sensors[0] : null;
-        setMatchedSensor(firstSensor);
+        // Get the closest sensor to location
+        const closestSensor = findClosestObject(user ? user.latitude : matchedDistrict?.latitude || 0, user ? user.longitude : matchedDistrict?.longitude || 0, sensors ?? []);
+        setMatchedSensor(closestSensor);
     }, [sensors]);
 
     function getLowestKey(map, givenValue = matchedSensor ? matchedSensor.particular_matter_25.aqi_us_ranking : ""){
@@ -138,12 +145,11 @@ export default function Page() {
                 // Sort the daily weather data by time
                 daily.time.sort((a, b) => new Date(a) - new Date(b));
                 setDailyWeather(daily);
-                console.log(dailyWeather);
                 // Get the current hour and find its index in the hourly weather data
                 const currentHour = new Date().toISOString().slice(0, 13) + ':00';
                 const currentIndex = hourly.time.findIndex((time) => time === currentHour);
                 setCurrentHourIndex(currentIndex);
-                setWindDirection(hourlyWeather.winddirection_10m[currentIndex] + 180);
+                setWindDirection((hourlyWeather?.winddirection_10m[currentIndex] || 0) + 180);
             } catch (error) {
                 console.error('Error fetching weather data:', error);
             }
@@ -178,17 +184,50 @@ export default function Page() {
         }
     };
 
+    function anchorToClosestStation(){
+        let markerPane = document.querySelector('.leaflet-marker-pane');
+        let imgElements = markerPane.querySelectorAll('img');
+        let selectedImg = null;
+
+        imgElements.forEach((img) => {
+            const src = img.getAttribute('src');
+            if (src.includes('stationIconClosest')) {
+                selectedImg = img;
+                return; // Stop the loop once the element is found
+            }
+        });
+
+        selectedImg.scrollIntoView({
+            behavior: 'smooth', // Use 'auto' for instant scroll or 'smooth' for smooth scroll
+            block: 'center', // Scroll to the center of the viewport
+            inline: 'center', // Scroll to the center of the viewport
+        });
+
+        selectedImg.classList.add('bouncy-animation');
+        setTimeout(() => {
+            selectedImg.classList.remove('bouncy-animation');
+        }, 2000);
+    }
+
+    function clearUser(){
+        if (user) {
+            localStorage.removeItem("user-loc");
+        }
+        router.push('/heat-map');
+    }
+
     return (
         <>
             <Navbar/>
             <div className="px-4 mx-auto lg:max-w-screen-2xl md:px-8">
                 <div className="stationNav pt-5 mb-16">
-                    <div className="stationDiv">
+                    <div className="stationDiv" onClick={anchorToClosestStation}>
                         <img className="stationImg" src={stationIcon.src}></img>
-                        <span className="stationText">Stanica</span>
+                        <span className="stationText">Stanica: {matchedSensor ? matchedSensor.name : ""}</span>
                     </div>
                     <span className="stationNavCity"><Link href="/heat-map">Subotica</Link></span>
-                    <span className="stationDistrict">{matchedDistrict ? matchedDistrict.name : ""}</span>
+                    <span className="stationDistrict">{user ? "Vaša lokacija" : matchedDistrict ? matchedDistrict.name : ""}</span>
+                    <span className="stationDistrict" onClick={user ? clearUser : function (){return false;}}> <u>{user ? "Uklonite lokaciju" : ""}</u></span>
                 </div>
                 <div className="heatMapHeader">
                     <div className="updated mb-3">
@@ -224,7 +263,7 @@ export default function Page() {
                     <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
                     <hr/>
                     <div className="weatherTemp">
-                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? hourlyWeather.temperature_2m[currentHourIndex] : "") + "°"}</span>
+                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? Math.round(hourlyWeather.temperature_2m[currentHourIndex]) : "") + "°"}</span>
                         </div>
                         <div className="mt-2 h-full text-center">{weatherMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}</div>
                     </div>
@@ -244,7 +283,7 @@ export default function Page() {
                             <span>Pritisak</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={pressureIcon.src}/>
-                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure) * 0.030 : ""}<small>Hg</small></span></div>
+                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure * 0.030) : ""}<small>Hg</small></span></div>
                         </div>
                     </div>
                     <hr/>
@@ -277,7 +316,7 @@ export default function Page() {
                     <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
                     <hr/>
                     <div className="weatherTemp">
-                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? hourlyWeather.temperature_2m[currentHourIndex] : "") + "°"}</span>
+                        <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? Math.round(hourlyWeather.temperature_2m[currentHourIndex]) : "") + "°"}</span>
                         </div>
                         <div className="mt-2 h-full text-center">{weatherMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}</div>
                     </div>
@@ -297,7 +336,7 @@ export default function Page() {
                             <span>Pritisak</span>
                             <div className="flex flex-row justify-between w-20"><img width="20px"
                                                                                      src={pressureIcon.src}/>
-                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure) * 0.030 : ""}<small>Hg</small></span></div>
+                                <span className="text-xs mt-1">{matchedSensor ? Math.round(matchedSensor.air_pressure * 0.030) : ""}<small>Hg</small></span></div>
                         </div>
                     </div>
                     <hr/>
