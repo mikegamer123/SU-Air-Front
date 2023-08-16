@@ -11,73 +11,34 @@ import stationIcon from "@/resources/images/ic-location-station.svg.svg";
 import DynamicMap from "@/components/Map/DynamicMap";
 import {useRouter} from "next/router";
 import {showToast} from "@/toastHelper";
-import {qualityColor, qualityText, weatherMap, weatherIconMap, BASE_WEATHER_URL} from "@/config";
+import {
+    qualityColor,
+    qualityText,
+    weatherMap,
+    weatherIconMap,
+    BASE_WEATHER_URL,
+    BASE_API_URL,
+    qualityColorVals
+} from "@/config";
 import React, {useEffect, useState} from 'react';
 import BarChart from "@/components/BarChart/BarChart";
 import {validateConfig} from "next/dist/server/config-shared";
-import {formatDateToSerbian} from "@/dateHelper";
+import {
+    convertTimestampToDate,
+    formatDateToSerbian, formatDateToSerbianWithHours,
+    getCurrentDateFormatted,
+    getWeekAfterCurrentDateFormatted,
+    getWeekBeforeCurrentDateFormatted
+} from "@/dateHelper";
 import {findClosestObject} from "@/findClosestHelper";
+import MiniBarChart from "@/components/BarChart/MiniBarChart";
 
 export default function Page() {
-    const Data = [
-        {
-            id: 1,
-            year: 2016,
-            userGain: 80000,
-            userLost: 823
-        },
-        {
-            id: 2,
-            year: 2017,
-            userGain: 45677,
-            userLost: 345
-        },
-        {
-            id: 3,
-            year: 2018,
-            userGain: 78888,
-            userLost: 555
-        },
-        {
-            id: 4,
-            year: 2019,
-            userGain: 90000,
-            userLost: 4555
-        },
-        {
-            id: 5,
-            year: 2020,
-            userGain: 4300,
-            userLost: 234
-        }
-    ]; // for example only until I pull data
-
     const [userLocation, setUserLocation] = useState(null);
-    const [chartData, setChartData] = useState({
-        labels: Data.map((data) => data.year),
-        datasets: [
-            {
-                label: "Users Gained",
-                data: Data.map((data) => data.userGain),
-                backgroundColor: [
-                    "rgba(75, 192, 192, 1)",
-                    "#ecf0f1",
-                    "#50AF95",
-                    "#f3ba2f",
-                    "#2a71d0",
-                ],
-                borderColor: "black",
-                borderWidth: 2,
-            },
-        ],
-        options: {
-            scales: {
-                x: {
-                    type: 'category', // Set the scale type to "category"
-                },
-            },
-        },
-    });
+    const [chartData, setChartData] = useState(null);
+    const [miniChartData, setMiniChartData] = useState(null);
+    const [isDayActive, setIsDayActive] = useState(true);
+    const [isPm25, setPm25] = useState(false);
 
     const router = useRouter();
     const slug = router.query.slug;
@@ -87,6 +48,8 @@ export default function Page() {
     const [currentHourIndex, setCurrentHourIndex] = useState(null);
     const [windDirection, setWindDirection] = useState(null);
     const [districts, setDistricts] = useState(null);
+    const [historicDayData, setHistoricDayData] = useState(null);
+    const [historicHourData, setHistoricHourData] = useState(null);
     const [sensors, setSensors] = useState(null);
     const [matchedDistrict, setMatchedDistrict] = useState(null);
     const [matchedSensor, setMatchedSensor] = useState(null);
@@ -129,6 +92,117 @@ export default function Page() {
         return result;
     }
 
+    //load day data from specific station for a week
+    useEffect(() => {
+        if (matchedSensor) {
+            const url = new URL(BASE_API_URL + '/AQI/search');
+            url.searchParams.append('model_name', 'Day');
+            url.searchParams.append('name', matchedSensor ? matchedSensor.name : null);
+            url.searchParams.append('start_date', /*getWeekBeforeCurrentDateFormatted()*/ '2023-07-23');
+            url.searchParams.append('end_date', /*getCurrentDateFormatted()*/ '2023-07-30');
+            url.searchParams.append('sort_by', 'time_stamp');
+            url.searchParams.append('order', 'asc');
+            fetch(url.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("login_token")
+                }
+            }).then(response => response.json())
+                .then(data => {
+                    const jsonData = data;
+                    setHistoricDayData(jsonData);
+                })
+        }
+    }, [matchedSensor]);
+
+    useEffect(() => {
+        setChartData(historicDayData ? {
+            type: "bar",
+            data: {datasets: [
+                {
+                    label: "Kvalitet vazduha po danima",
+                    data: historicDayData.map((data) => data.particular_matter_25.aqi_us_ranking),
+                    backgroundColor: historicHourData.map((data) => {
+                        const aqiValue = data.particular_matter_25.aqi_us_ranking;
+                        return getLowestKey(qualityColorVals, aqiValue)
+                    }),
+                    borderColor: "black",
+                    borderWidth: 2,
+                },
+            ],
+                labels: historicDayData.map((data) => formatDateToSerbian(convertTimestampToDate(data.time_stamp))),
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category', // Set the scale type to "category"
+                    },
+                },
+            },
+        } : null);
+
+        setMiniChartData(historicHourData ? {
+            type: "bar",
+            data: {datasets: [
+                    {
+                        label: "Kvalitet vazduha po satima",
+                        data: historicHourData.map((data) => data.particular_matter_25.aqi_us_ranking),
+                        backgroundColor: historicHourData.map((data) => {
+                            const aqiValue = data.particular_matter_25.aqi_us_ranking;
+                            return getLowestKey(qualityColorVals, aqiValue)
+                        }),
+                        borderColor: "black",
+                        borderWidth: 2,
+                    },
+                ],
+                labels: historicHourData.map((data) => formatDateToSerbianWithHours(convertTimestampToDate(data.time_stamp))),
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    y: {
+                        display: false, // Hide Y axis labels
+                    },
+                    x: {
+                        display: false, // Hide X axis labels
+                    },
+                },
+            },
+        } : null);
+    }, [historicHourData]);
+
+
+
+    //load hour data from specific station for a week
+    useEffect(() => {
+
+        const url = new URL(BASE_API_URL + '/AQI/search');
+        url.searchParams.append('model_name', 'Hour');
+        url.searchParams.append('name', matchedSensor ? matchedSensor.name : "");
+        url.searchParams.append('start_date', /*getWeekBeforeCurrentDateFormatted()*/'2023-08-01');
+        url.searchParams.append('end_date', /*getCurrentDateFormatted()*/'2023-08-02');
+        url.searchParams.append('sort_by', 'time_stamp');
+        url.searchParams.append('order', 'asc');
+        fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem("login_token")
+            }
+        })  .then(response => response.json())
+            .then(data => {
+                const jsonData = data;
+                setHistoricHourData(jsonData);
+            })
+    }, [historicDayData]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -163,6 +237,136 @@ export default function Page() {
             localStorage.setItem("user-loc", JSON.stringify(userLocation));
         }
     }, [userLocation]);
+
+    useEffect(() => {
+        if (matchedDistrict) {
+            localStorage.setItem("matched-district", JSON.stringify(matchedDistrict));
+        }
+    }, [matchedDistrict]);
+
+
+    const switchToDay = () => {
+        if(!isPm25){
+            setChartData(historicDayData ? {
+                type: "bar",
+                data: {datasets: [
+                        {
+                            label: "Kvalitet vazduha po danima",
+                            data: historicDayData.map((data) => data.particular_matter_25.aqi_us_ranking),
+                            backgroundColor: historicHourData.map((data) => {
+                                const aqiValue = data.particular_matter_25.aqi_us_ranking;
+                                return getLowestKey(qualityColorVals, aqiValue)
+                            }),
+                            borderColor: "black",
+                            borderWidth: 2,
+                        },
+                    ],
+                    labels: historicDayData.map((data) => formatDateToSerbian(convertTimestampToDate(data.time_stamp))),
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'category', // Set the scale type to "category"
+                        },
+                    },
+                },
+            } : null);
+        }
+        else{
+            switchToPm25(true);
+        }
+        setIsDayActive(true);
+    };
+
+    const switchToHour = () => {
+        if(!isPm25){
+            setChartData(historicHourData ? {
+                type: "bar",
+                data: {datasets: [
+                        {
+                            label: "Kvalitet vazduha u zadnjih 24 sata",
+                            data: historicHourData.map((data) => data.particular_matter_25.aqi_us_ranking),
+                            backgroundColor: historicHourData.map((data) => {
+                                const aqiValue = data.particular_matter_25.aqi_us_ranking;
+                                return getLowestKey(qualityColorVals, aqiValue)
+                            }),
+                            borderColor: "black",
+                            borderWidth: 2,
+                        },
+                    ],
+                    labels: historicHourData.map((data) => formatDateToSerbianWithHours(convertTimestampToDate(data.time_stamp))),
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'category', // Set the scale type to "category"
+                        },
+                    },
+                },
+            } : null);
+        }
+        else{
+            switchToPm25(false);
+        }
+        setIsDayActive(false);
+    };
+
+    const switchToPm25 = (isDayActiveVar = isDayActive) => {
+        let newChartData = isDayActiveVar ? historicDayData : historicHourData;
+        setChartData(newChartData ? {
+            type: "bar",
+            data: {datasets: [
+                    {
+                        label: "Koncentracija PM2.5 u vazduhu u zadnjih" + (isDayActiveVar ? " nedelju dana" : " 24 sata"),
+                        data: newChartData.map((data) => data.particular_matter_25.concentration),
+                        backgroundColor: [
+                            "#009988",
+                        ],
+                        borderColor: "black",
+                        borderWidth: 2,
+                    },
+                ],
+                labels: newChartData.map((data) => isDayActiveVar ? formatDateToSerbian(convertTimestampToDate(data.time_stamp))  : formatDateToSerbianWithHours(convertTimestampToDate(data.time_stamp))),
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category', // Set the scale type to "category"
+                    },
+                },
+            },
+        } : null);
+        setPm25(true);
+    };
+
+    const switchToAQI = () => {
+        let newChartData = isDayActive ? historicDayData : historicHourData;
+        setChartData(newChartData ? {
+            type: "bar",
+            data: {datasets: [
+                    {
+                        label: isDayActive ? "Kvalitet vazduha po danima" :  "Kvalitet vazduha u zadnjih 24 sata",
+                        data: newChartData.map((data) => data.particular_matter_25.aqi_us_ranking),
+                        backgroundColor: historicHourData.map((data) => {
+                            const aqiValue = data.particular_matter_25.aqi_us_ranking;
+                            return getLowestKey(qualityColorVals, aqiValue)
+                        }),
+                        borderColor: "black",
+                        borderWidth: 2,
+                    },
+                ],
+                labels: newChartData.map((data) => isDayActive ? formatDateToSerbian(convertTimestampToDate(data.time_stamp))  : formatDateToSerbianWithHours(convertTimestampToDate(data.time_stamp))),
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category', // Set the scale type to "category"
+                    },
+                },
+            },
+        } : null);
+        setPm25(false);
+    };
 
     const handleLocateClick = () => {
         if (navigator.geolocation) {
@@ -221,13 +425,13 @@ export default function Page() {
             <Navbar/>
             <div className="px-4 mx-auto lg:max-w-screen-2xl md:px-8">
                 <div className="stationNav pt-5 mb-16">
-                    <div className="stationDiv" onClick={anchorToClosestStation}>
+                    <div className="stationDiv hoverButton" onClick={anchorToClosestStation}>
                         <img className="stationImg" src={stationIcon.src}></img>
                         <span className="stationText">Stanica: {matchedSensor ? matchedSensor.name : ""}</span>
                     </div>
-                    <span className="stationNavCity"><Link href="/heat-map">Subotica</Link></span>
-                    <span className="stationDistrict">{user ? "Vaša lokacija" : matchedDistrict ? matchedDistrict.name : ""}</span>
-                    <span className="stationDistrict" onClick={user ? clearUser : function (){return false;}}> <u>{user ? "Uklonite lokaciju" : ""}</u></span>
+                    <span className="stationNavCity ml-2 hoverItem"><Link href="/heat-map">Subotica</Link></span>
+                    <span className="stationDistrict hoverItem">{user ? "Vaša lokacija" : matchedDistrict ? matchedDistrict.name : ""}</span>
+                    <span className="stationDistrict hoverItem" onClick={user ? clearUser : function (){return false;}}> <u>{user ? "Uklonite lokaciju" : ""}</u></span>
                 </div>
                 <div className="heatMapHeader">
                     <div className="updated mb-3">
@@ -239,7 +443,7 @@ export default function Page() {
                         <span
                             className="helpingHeader">Indeks kvaliteta vazduha (AKI) i zagađenje vazduha PM 2,5 kod {matchedDistrict ? matchedDistrict.name : ""}, Subotica</span>
                     </div>
-                    <div className="locateBtn lg:m-0 m-auto my-4" onClick={handleLocateClick}>
+                    <div className="locateBtn hoverButton lg:m-0 m-auto my-4" onClick={handleLocateClick}>
                         <img src={locateIcon.src} alt="lociraj ikonica"></img>
                         <span>Lociraj me</span>
                     </div>
@@ -260,7 +464,7 @@ export default function Page() {
                         <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
                         <span>Subotica <br/> {matchedSensor ? (new Date(new Date(matchedSensor.cron_job_timestamp).getTime() - 2 * 60 * 60 * 1000).toLocaleString("en-GB", { hour: 'numeric', minute: 'numeric', month: 'short', day: 'numeric' })) : ""}</span>
                     </div>
-                    <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
+                    <a href="#dailyWeatherDetails"><div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div></a>
                     <hr/>
                     <div className="weatherTemp">
                         <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? Math.round(hourlyWeather.temperature_2m[currentHourIndex]) : "") + "°"}</span>
@@ -290,9 +494,9 @@ export default function Page() {
                     <div className="hourlyDetail flex flex-col">
                         <span className="text-left">Prošla 24 sata</span>
                         <div className='chartMiniData'>
-                            <BarChart chartData={chartData}/>
+                            {miniChartData ? (<MiniBarChart miniChartData={miniChartData}/>) : ""}
                         </div>
-                        <div className="detailBtn text-center mt-10">Pogledajte detalje</div>
+                        <Link href="/history"><div className="detailBtn text-center mt-10">Pogledajte detalje</div></Link>
                     </div>
                 </div>
 
@@ -313,7 +517,7 @@ export default function Page() {
                         <span>{matchedDistrict ? matchedDistrict.name : ""}</span>
                         <span>Subotica <br/> {matchedSensor ? (new Date(new Date(matchedSensor.cron_job_timestamp).getTime() - 2 * 60 * 60 * 1000).toLocaleString("en-GB", { hour: 'numeric', minute: 'numeric', month: 'short', day: 'numeric' })) : ""}</span>
                     </div>
-                    <div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div>
+                    <a href="#dailyWeatherDetails"><div className="getWeather pt-4">Dnevna prognoza <span> {">"} </span></div></a>
                     <hr/>
                     <div className="weatherTemp">
                         <div className="flex flex-row"><img width="50px" src={weatherIconMap.get(hourlyWeather ? hourlyWeather.weathercode[currentHourIndex] : 0)}/> <span className="mt-2 ml-2">{(hourlyWeather ? Math.round(hourlyWeather.temperature_2m[currentHourIndex]) : "") + "°"}</span>
@@ -343,9 +547,9 @@ export default function Page() {
                     <div className="hourlyDetail flex flex-col">
                         <span className="text-left">Prošla 24 sata</span>
                         <div className='chartMiniData'>
-                            <BarChart chartData={chartData}/>
+                            {miniChartData ? (<MiniBarChart miniChartData={miniChartData}/>) : ""}
                         </div>
-                        <div className="detailBtn text-center mt-10">Pogledajte detalje</div>
+                        <Link href="/history"><div className="detailBtn text-center mt-10">Pogledajte detalje</div></Link>
                     </div>
                 </div>
                 <div className="legendLive">
@@ -375,7 +579,7 @@ export default function Page() {
             <div className="px-4 mx-auto lg:max-w-screen-2xl md:px-8">
                 <div className="slugSection">
                     <div className="analyseDiv flex md:flex-row flex-col">
-                        <div className="details flex flex-col md:w-2/3 w-full">
+                        <div id="dailyWeatherDetails" className="details flex flex-col md:w-2/3 w-full">
                             <h1>Prognoza</h1>
                             <h2 className="pt-2 pb-8">Kod
                                 Subotica, {matchedDistrict ? matchedDistrict.name : ""} kvalitet vazduha (AQI)</h2>
@@ -383,7 +587,7 @@ export default function Page() {
                                 <thead>
                                 <tr>
                                     <th>Dan</th>
-                                    <th>Nivo zagađenja</th>
+                                    {/*<th>Nivo zagađenja</th>*/} {/*POSSIBLE TODO CHECK IF WE WILL HAVE PREDICTIONS FOR AQI DATA*/}
                                     <th>Vreme</th>
                                     <th>Temperatura</th>
                                     <th>Vetar</th>
@@ -393,16 +597,16 @@ export default function Page() {
                                 {dailyWeather ? dailyWeather.time.map((date, index) => (
                                 <tr className={"" + index == 0 ? "today" : ""} key={date}>
                                     <td>{index == 0 ? "Danas" : formatDateToSerbian(date)}</td>
-                                    <td className="pr-4">
-                                        <div className="flex flex-row justify-between aqiSlug yellow">
-                                        <span>
-                                            {index == 0 ? "Danas" : formatDateToSerbian(date)}
-                                        </span>
-                                            <span>
-                                                {"61 US AQI"}
-                                            </span>
-                                        </div>
-                                    </td>
+                                    {/*<td className="pr-4">*/}
+                                    {/*    <div className="flex flex-row justify-between aqiSlug yellow">*/}
+                                    {/*    <span>*/}
+                                    {/*        {index == 0 ? "Danas" : formatDateToSerbian(date)}*/}
+                                    {/*    </span>*/}
+                                    {/*        <span>*/}
+                                    {/*            {"61 US AQI"}*/}
+                                    {/*        </span>*/}
+                                    {/*    </div>*/}
+                                    {/*</td>*/} {/*POSSIBLE TODO CHECK IF WE WILL HAVE PREDICTIONS FOR AQI DATA*/}
                                     <td><img className="d-initial" width="25%" src={weatherIconMap.get(dailyWeather ? dailyWeather.weathercode[index] : 0)}/> {"  " + dailyWeather.precipitation_probability_max[index] + "%"}</td>
                                     <td>
                                         <span className="mr-4 font-bold">{Math.round(dailyWeather.temperature_2m_min[index]) + "°"}</span>
@@ -419,15 +623,19 @@ export default function Page() {
                                 <h1>Istorija</h1>
                                 <h2 className="pt-2 pb-8">Istorijski grafikon kvaliteta vazduha: Kod {matchedDistrict ? matchedDistrict.name : ""}, Subotica</h2>
                                 <div className="hourDayButtons flex flex-row justify-center mb-12">
-                                    <div className="button hourBtn mr-3 active">Po satu</div>
-                                    <div className="button dayBtn">Po danu</div>
+                                    <div className={`button dayBtn ${isDayActive ? 'active' : ''}`} onClick={switchToDay}>
+                                        Po danu
+                                    </div>
+                                    <div className={`button hourBtn ml-3 ${isDayActive ? '' : 'active'}`} onClick={switchToHour}>
+                                        Po satu
+                                    </div>
                                 </div>
                                 <div className="chart">
-                                    <BarChart chartData={chartData}/>
+                                    {chartData ? (<BarChart chartData={isDayActive ? chartData : chartData}/>) : ""}
                                 </div>
                                 <div className="typeButtons flex flex-row justify-center mt-12">
-                                    <div className="button mr-3 active">AQI</div>
-                                    <div className="button">PM2.5</div>
+                                    <div className={`button mr-3 ${isPm25 ? '' : 'active'}`} onClick={switchToAQI}>AQI</div>
+                                    <div className={`button ${isPm25 ? 'active' : ''}`} onClick={switchToPm25}>PM2.5</div>
                                 </div>
                             </div>
                         </div>

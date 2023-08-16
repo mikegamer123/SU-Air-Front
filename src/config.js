@@ -32,6 +32,7 @@ qualityColorVals.set(40, '#F99049');
 qualityColorVals.set(30, '#F65E5F');
 qualityColorVals.set(20, '#A070B6');
 qualityColorVals.set(10, '#A06A7B');
+qualityColorVals.set(0, '#009988');
 
 //weather descriptions
 export const weatherMap = new Map([

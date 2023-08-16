@@ -7,6 +7,8 @@
     --main-bg: 252, 252, 252;
 }
 
+html{scroll-behavior:smooth}
+
 body {
     color: rgb(var(--foreground-rgb));
     background: rgb(var(--main-bg));
@@ -141,6 +143,18 @@ body {
 
 .districtCard:hover .districtText {
     top: 30%;
+}
+
+.hoverItem:hover{
+    color: #009988;
+}
+
+.hoverButton {
+    transition: transform 0.3s ease-in-out;
+}
+
+.hoverButton:hover {
+    transform: scale(1.1);
 }
 
 .districtCard {

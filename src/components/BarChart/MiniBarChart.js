@@ -1,29 +1,29 @@
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 
-const BarChart = ({chartData}) => {
-    const chartRef = useRef(null);
+const MiniBarChart = ({miniChartData}) => {
+    const miniChartRef = useRef(null);
 
     useEffect(() => {
-        if (chartRef.current) {
-            const ctx = chartRef.current.getContext("2d");
+        if (miniChartRef.current) {
+            const ctx = miniChartRef.current.getContext("2d");
 
-            const myChart = new Chart(ctx, chartData);
+            const myChart = new Chart(ctx, miniChartData);
 
             // When the component unmounts
             return () => {
                 myChart.destroy();
             };
         }
-    }, [chartData]);
+    }, []);
 
     return (
         <div className="chart-container">
             <div className="pt-0 rounded-xl">
-                <canvas ref={chartRef}></canvas>
+                <canvas ref={miniChartRef}></canvas>
             </div>
         </div>
     );
 };
 
-export default BarChart;
+export default MiniBarChart;
