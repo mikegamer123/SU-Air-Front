@@ -16,14 +16,14 @@ qualityText.set(55, 'Umereno');
 qualityText.set(40, 'Nezdravo za os. grupe');
 qualityText.set(30, 'Nezdravo');
 qualityText.set(20, 'Vrlo Nezdravo');
-qualityText.set(10, 'Opasno');
+qualityText.set(0, 'Opasno');
 export const qualityColor = new Map();
 qualityColor.set(75, 'dobar');
 qualityColor.set(55, 'umereno');
 qualityColor.set(40, 'nezdravoOs');
 qualityColor.set(30, 'nezdravo');
 qualityColor.set(20, 'vrloNezdravo');
-qualityColor.set(10, 'opasno');
+qualityColor.set(0, 'opasno');
 
 export const qualityColorVals = new Map();
 qualityColorVals.set(75, '#9CD84E');
@@ -31,8 +31,7 @@ qualityColorVals.set(55, '#FACF39');
 qualityColorVals.set(40, '#F99049');
 qualityColorVals.set(30, '#F65E5F');
 qualityColorVals.set(20, '#A070B6');
-qualityColorVals.set(10, '#A06A7B');
-qualityColorVals.set(0, '#009988');
+qualityColorVals.set(0, '#A06A7B');
 
 //weather descriptions
 export const weatherMap = new Map([
