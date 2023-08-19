@@ -1,0 +1,61 @@
+.dataTable{
+    width: 100%;
+    margin: 0 auto;
+    padding: 50px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+.dataTableInner {
+    border: #009988 2px solid;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+@media (max-width: 1000px) {
+    .dataTable {
+        padding: 0;
+    }
+}
+/*      CHECKBOX         */
+
+.dataTable input[type="checkbox"] {
+    visibility: hidden!important;
+}
+
+
+.dataTable input[type="checkbox"] {
+    position: relative;
+    padding-left: 35px;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.dataTable input[type="checkbox"]:before {
+    visibility: visible;
+    content: "\1F5A4";
+    top: -18px;
+    left: -15px;
+    border: 1px solid transparent;
+    padding: 10px;
+    border-radius: 3px;
+    display: block;
+    position: absolute;
+    transition:  .5s ease;
+}
+
+
+
+.dataTable input[type="checkbox"]:checked:before {
+    border: 1px solid transparent;
+    background-color: transparent;
+}
+
+.dataTable input[type="checkbox"]:checked:after {
+    visibility: visible;
+    content: '\2764';
+    font-size: 18px;
+    position: absolute;
+    top: -7px;
+    left: -4px;
+    color: gold;
+    transition:  .5s ease;
+}

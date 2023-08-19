@@ -329,7 +329,7 @@ body {
 }
 
 .detailBtn {
-    background: #028C7D;
+    background: #009988;
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 2px;
     text-transform: uppercase;
@@ -515,7 +515,7 @@ body {
 }
 
 .chartDiv .active{
-    background: #028C7D!important;
+    background: #009988!important;
     border: 1px solid #456E98!important;
     border-radius: 4px!important;
     color:white!important;
