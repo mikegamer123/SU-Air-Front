@@ -1,9 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
 import DataTable,{ createTheme } from "react-data-table-component"
 import styles from './DataTable.module.css';
-import {formatDate} from "@/dateHelper";
+import {convertTimestampToDate, formatDate} from "@/dateHelper";
+import {BASE_API_URL} from "@/config";
+import {showToast} from "@/toastHelper";
 
-const DataTableComponent = ({dataTableData}) => {
+const DataTableComponent = ({dataTableData, filters}) => {
+
+    const [selectedRows, setSelectedRows] = useState([]);
 
     createTheme(
         'suAirTheme',
@@ -44,9 +48,9 @@ const DataTableComponent = ({dataTableData}) => {
         },
         {
             name: 'Datum',
-            selector: row => formatDate(row.time_stamp),
+            selector: row => filters.model_name == "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
             sortable: true,
-            format: row => formatDate(row.time_stamp),
+            format: row => filters.model_name == "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
             reorder: true
         },
         {
@@ -123,9 +127,45 @@ const DataTableComponent = ({dataTableData}) => {
         message: "Izabran/a",
     };
 
+    const handleSelectedRowsChange = (state) => {
+            setSelectedRows(state.selectedRows);
+    };
+
+    function saveFavorites() {
+
+        const formattedData = {};
+        console.log(selectedRows);
+        selectedRows.forEach(row => {
+                if (!formattedData["itemId"]) {
+                    formattedData["itemId"] = [];
+                formattedData["itemId"].push(row.id);
+            }
+        });
+
+        console.log(JSON.stringify(formattedData));
+
+        fetch(BASE_API_URL + '/AQI/favorite'+filters.model_name, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            },
+            body: JSON.stringify(formattedData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast("Uspešno sačuvani favoriti!")
+                console.log(data);
+            })
+            .catch(error => {
+                showToast("Greška u čuvanju!<br>" + error, "error")
+            });
+    }
+
     return (
         <div className={styles.dataTable}>
             <div className={styles.dataTableInner}>
+                { selectedRows.length > 0 && (<button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>Sačuvaj favorite 💕</button>)}
         <DataTable
             title="Istorijski podatci"
             columns={columns}
@@ -138,6 +178,8 @@ const DataTableComponent = ({dataTableData}) => {
             paginationPerPage={25}
             paginationRowsPerPageOptions={[25,50,75,100]}
             selectableRows
+            onSelectedRowsChange={handleSelectedRowsChange}
+            selectedRows={selectedRows}
             contextMessage={customTranslations}
             theme="suAirTheme"
         />

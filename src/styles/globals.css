@@ -111,6 +111,18 @@ body {
     cursor: pointer;
 }
 
+.saveFavoritesBtn{
+    color: white !important;
+    display: flex;
+    background: #009988;
+    border-radius: 4px;
+    text-align: center;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    height: fit-content;
+    cursor: pointer;
+}
+
 .locateBtn img {
     padding: 10px;
 }
@@ -500,6 +512,113 @@ body {
     cursor: pointer;
 }
 
+.filtersDiv{
+    width: 100%;
+    margin: 0 auto;
+    padding: 50px;
+    padding-bottom: 20px;
+    transition: 0.3s;
+}
+
+.filtersInnerDiv{
+    border: #009988 2px solid;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease-in-out forwards;
+}
+
+.filtersDiv .h2FilterClose{
+    width: 100%;
+    margin-left: 16px;
+    font-weight: 400;
+    font-size: 22px;
+    color:#009988;
+    display: flex;
+    justify-content: space-between;
+}
+
+.filtersDiv .h2FilterClose .closeButton{
+    margin-right: 16px;
+    transition: transform 0.3s;
+}
+
+.filtersDiv .h2FilterClose .closeButton:hover{
+   transform: rotate(90deg);
+}
+
+.filtersDiv .h2ToOpenFilters{
+    font-weight: 400;
+    font-size: 22px;
+    color:#ffffff;
+    background: #009988;
+    cursor: pointer;
+}
+
+.filterSingle{
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 45%;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+
+.filterSingle select {
+    /* Reset Select */
+    appearance: none;
+    outline: 10px red;
+    border: 0;
+    box-shadow: none;
+
+    flex: 1;
+    padding: 0 1em;
+    color: #fff;
+    background-color: #009988;
+    background-image: none;
+    cursor: pointer;
+}
+
+.filterSingle .select {
+    position: relative;
+    display: flex;
+    width: 20em;
+    height: 3em;
+    border-radius: .25em;
+    overflow: hidden;
+}
+
+.filterSingle .select::after {
+    content: '\25BC';
+    position: absolute;
+    top: -2px;
+    right: 0;
+    padding: 1em;
+    background-color: rgba(0, 0, 0, 0.20);
+    transition: .25s all ease;
+    pointer-events: none;
+    color:white;
+}
+
+.filterSingle .select:hover::after {
+    color: #f39c12;
+}
+
+.filterSingle input{
+    border: 1px solid #009988;
+    width: 60%;
+    margin: 0 auto;
+    text-align: center!important;
+}
+
+.filterSingle input[type="number"]{
+    width: 30%;
+    text-indent: 13px;
+}
+
 .today{
     background: #F3F7FB;
     box-shadow: inset 2px 0px 0px #499FBC;
@@ -575,6 +694,17 @@ body {
     }
     100% {
         top: 0;
+    }
+}
+
+@keyframes slideDown {
+    0% {
+        max-height: 0;
+        opacity: 0;
+    }
+    100% {
+        max-height: 1000px;
+        opacity: 1;
     }
 }
 

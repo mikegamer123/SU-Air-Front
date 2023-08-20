@@ -12,12 +12,24 @@ export function formatDateToSerbian(dateString) {
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
 }
 
+export function formatStringFromDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export function formatDate(dateString) {
     const date = new Date(dateString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+export function formatReturnDate(dateString) {
+    const date = new Date(dateString);
+    return date;
 }
 
 export function formatDateToSerbianWithHours(dateString) {

@@ -10,6 +10,30 @@
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
+.saveFavoritesButton{
+    position: relative;
+    color: white !important;
+    display: flex;
+    background: #009988;
+    text-align: center;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    height: fit-content;
+    padding: 10px;
+    cursor: pointer;
+
+    opacity: 0;
+    left : -15%;
+    animation: slideInFromLeft 0.5s forwards;
+}
+
+@keyframes slideInFromLeft {
+    to {
+        opacity: 1;
+        left: 0;
+    }
+}
+
 @media (max-width: 1000px) {
     .dataTable {
         padding: 0;
