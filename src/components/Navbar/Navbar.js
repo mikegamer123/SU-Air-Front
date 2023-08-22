@@ -13,7 +13,28 @@ export default function Navbar() {
 
     const [navbar, setNavbar] = useState(false);
     const [user, setUser] = useState(null);
+    const [filteredRoutes, setFilteredRoutes] = useState([]);
     const router = useRouter();
+
+    const routeList = [
+        { label: 'Početna', route: '/' },
+        { label: 'Widget-i', route: '/widgets' },
+        { label: 'Istorija', route: '/history' },
+        { label: 'Politika o privatnosti', route: '/politika-o-privatnosti' },
+        { label: 'Uslovi korišćenja', route: '/uslovi-koriscenja' },
+        { label: 'Korisnik-Registracija', route: '/registration' },
+        { label: 'Heat-Map', route: '/heat-map' },
+        { label: 'Lokacije', route: '/heat-map' },
+        { label: 'Kvalitet Vazduha', route: '/heat-map' },
+    ];
+
+    const handleSearchChange = (event) => {
+        let searchTerm = event.target.value;
+        const filteredLocalRoutes = routeList.filter(route =>
+            searchTerm !== "" && route.label.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredRoutes(filteredLocalRoutes);
+    };
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -60,7 +81,7 @@ export default function Navbar() {
                 <div>
                     <div className="flex items-center justify-between py-3 lg:py-5 lg:block">
                         <Link href="/">
-                            <h2 className="text-2xl text-white font-bold"><img src={LogoImg.src} alt='LOGO'></img>
+                            <h2 className="text-2xl text-white font-bold hoverButton"><img src={LogoImg.src} alt='LOGO'></img>
                             </h2>
                         </Link>
                         <div className="lg:hidden">
@@ -102,9 +123,9 @@ export default function Navbar() {
                 >
                     <ul className="items-center justify-end py-3 space-y-8 lg:flex lg:space-x-6 lg:space-y-0">
                         <li className={'text-black ' + styles.hoveredListItem}>
-                            <Link href="/o-nama">
-                                        <span className={router.route.includes('/o-nama') ? styles.currentPage : ''}>
-                                        O nama
+                            <Link href="/">
+                                        <span className={/^\/$/.test(router.route) ? styles.currentPage : ''}>
+                                        Početna
                                             </span>
                             </Link>
                         </li>
@@ -123,9 +144,9 @@ export default function Navbar() {
                             </Link>
                         </li>
                         <li className={'text-black ' + styles.hoveredListItem}>
-                            <Link href="/faq">
-                                         <span className={router.route.includes('/faq') ? styles.currentPage : ''}>
-                                        Česta pitanja
+                            <Link href="/widgets">
+                                         <span className={router.route.includes('/widgets') ? styles.currentPage : ''}>
+                                        Widget-i
                                             </span>
                             </Link>
                         </li>
@@ -136,12 +157,21 @@ export default function Navbar() {
                     className={`flex-1 justify-self-center pb-3 mt-8 lg:block lg:pb-0 lg:mt-0 ${navbar ? 'block' : 'hidden'} ${styles.nav}`}
                 >
                     <ul className="items-center justify-end py-3 space-y-8 lg:flex lg:space-x-6 lg:space-y-0">
-                        <li className={'text-black ' + styles.hoveredListItem}>
+                        <li className={'text-black'}>
                             <div className={"flex " + styles.searchBar}>
                                 <img className={styles.searchIcon} src={SearchImg.src} alt='Search Icon'></img>
                                 <input className={"w-full " + styles.searchInput} type='text'
-                                       placeholder='Pretraga'></input>
+                                       placeholder='Pretraga' onChange={handleSearchChange}></input>
                             </div>
+                            {filteredRoutes.length > 0 && (<div className={styles.foundRoutesDiv}>
+                                <ul>
+                                    {filteredRoutes.map((route, index) => (
+                                        <Link href={route.route} key={index}>
+                                            <li>{route.label}</li>
+                                        </Link>
+                                    ))}
+                                </ul>
+                            </div>)}
                         </li>
                         <li className={'text-black ' + styles.hoveredListItem}>
                             <Link href="/registration">

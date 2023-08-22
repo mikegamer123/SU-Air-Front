@@ -35,6 +35,24 @@ float: left;
     color: #009988;
 }
 
+.foundRoutesDiv{
+    position: absolute;
+    width: 200px;
+    text-align: center;
+    box-shadow: 5px 5px 20px -7px rgba(0, 0, 0, 0.75);
+}
+.foundRoutesDiv li {
+    background-color: #F6F6F6;
+    padding: 5px;
+    transition: background-color .5s ease;
+}
+
+.foundRoutesDiv li:hover {
+    background-color: #009988;
+    color:white;
+    padding: 5px;
+}
+
 .toast {
     display: flex;
     align-items: center;

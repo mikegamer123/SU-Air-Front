@@ -1,6 +1,6 @@
 import Navbar from "src/components/Navbar/Navbar"
 
-export default function Faq() {
+export default function Widgets() {
     return (
         <Navbar/>
     )

@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import DataTable,{ createTheme } from "react-data-table-component"
+import DataTable, {createTheme} from "react-data-table-component"
 import styles from './DataTable.module.css';
 import {convertTimestampToDate, formatDate} from "@/dateHelper";
 import {BASE_API_URL} from "@/config";
@@ -7,8 +7,7 @@ import {showToast} from "@/toastHelper";
 
 let selectedFavorites = [];
 
-const DataTableComponent = ({dataTableData, filters}) => {
-
+const DataTableComponent = ({dataTableData, filters, route}) => {
     const [userFavorites, setUserFavorites] = useState([]);
 
     createTheme(
@@ -107,7 +106,7 @@ const DataTableComponent = ({dataTableData, filters}) => {
 
     useEffect(() => {
         //get favorites for user
-        fetch(BASE_API_URL + '/AQI/get/user-favorites/'+filters.model_name, {
+        fetch(BASE_API_URL + '/AQI/get/user-favorites/' + filters.model_name, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -143,9 +142,14 @@ const DataTableComponent = ({dataTableData, filters}) => {
 
     // Custom translation object in Serbian
     const customTranslations = {
-        singular : "Red",
-        plural: "Reda",
-        message: "Izabran/a",
+        singular: "Red",
+        plural: "Redova",
+        message: "Sačuvani kao Favoriti" + (route.includes("/registration") ? "  ( Svi izmenjeni favoriti će biti izbrisani nakon odlaska sa stranice ili promene filtera )" : ""),
+        pagination: {
+            rowsPerPage: 'Redova po stranici:',
+            rangeSeparator: 'od',
+            noRowsPerPage: 'Nema redova za prikazivanje',
+        },
     };
 
 
@@ -154,20 +158,22 @@ const DataTableComponent = ({dataTableData, filters}) => {
         const formattedData = {};
         const deleteData = {};
         selectedFavorites.forEach(row => {
-                if (!formattedData["itemID"]) {
-                    formattedData["itemID"] = [];
-                }
-                formattedData["itemID"].push(row.id);
+            if (!formattedData["itemID"]) {
+                formattedData["itemID"] = [];
+            }
+            formattedData["itemID"].push(row.id);
         });
 
         userFavorites.forEach(row => {
-            if (!deleteData["itemID"]) {
-                deleteData["itemID"] = [];
+            if (dataTableData.map((currentData) => currentData._id).includes(row._id)) {
+                if (!deleteData["itemID"]) {
+                    deleteData["itemID"] = [];
+                }
+                deleteData["itemID"].push(row._id);
             }
-            deleteData["itemID"].push(row._id);
         });
 
-        fetch(BASE_API_URL + '/AQI/favorite'+filters.model_name, {
+        fetch(BASE_API_URL + '/AQI/favorite' + filters.model_name, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -177,7 +183,7 @@ const DataTableComponent = ({dataTableData, filters}) => {
         })
             .then(response => response.json())
             .then(data => {
-                fetch(BASE_API_URL + '/AQI/favorite'+filters.model_name, {
+                fetch(BASE_API_URL + '/AQI/favorite' + filters.model_name, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -209,24 +215,32 @@ const DataTableComponent = ({dataTableData, filters}) => {
     return (
         <div className={styles.dataTable}>
             <div className={styles.dataTableInner}>
-                <button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>Sačuvaj favorite 💕</button>
-        <DataTable
-            title="Istorijski podatci"
-            columns={columns}
-            data={data}
-            pagination
-            highlightOnHover
-            striped
-            defaultSortFieldId={2}
-            defaultSortAsc={false}
-            paginationPerPage={25}
-            paginationRowsPerPageOptions={[25,50,75,100]}
-            selectableRows
-            onSelectedRowsChange={handleSelectedRowsChange}
-            selectableRowSelected={(row) => userFavorites.map((selected) => selected._id).includes(row.id)}
-            contextMessage={customTranslations}
-            theme="suAirTheme"
-        />
+                <button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>{route.includes("/registration") ? "Izmeni" : "Sačuvaj"} favorite 💕
+                </button>
+                <DataTable
+                    title="Istorijski podatci"
+                    columns={columns}
+                    data={data}
+                    pagination
+                    highlightOnHover
+                    striped
+                    defaultSortFieldId={2}
+                    defaultSortAsc={false}
+                    paginationPerPage={25}
+                    paginationRowsPerPageOptions={[25, 50, 75, 100]}
+                    selectableRows
+                    onSelectedRowsChange={handleSelectedRowsChange}
+                    selectableRowSelected={(row) => userFavorites.map((selected) => selected._id).includes(row.id)}
+                    contextMessage={customTranslations}
+                    noDataComponent={<div className="mb-5">Nema redova za prikazivanje</div>}
+                    paginationComponentOptions={{
+                        rowsPerPageText: 'Redova po stranici:',
+                        rangeSeparatorText: 'od',
+                        noRowsPerPage: false,
+                        rangeSeparatorTemplate: 'od',
+                    }}
+                    theme="suAirTheme"
+                />
             </div>
         </div>
     );

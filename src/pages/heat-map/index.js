@@ -70,7 +70,6 @@ export default function Index() {
 
     //load all districts
     useEffect(() => {
-        console.log(BASE_API_URL+'/districts/get/all');
         const fetchData = () => {
             const authToken = localStorage.getItem("login_token");
 

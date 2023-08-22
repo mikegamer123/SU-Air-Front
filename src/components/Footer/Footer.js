@@ -19,24 +19,24 @@ export default function Footer() {
                 <h3 className={styles.footerNewsletterH3}>Prijavite se na naše novosti</h3>
                 <div className={styles.footerEmail}>
                     <input className={styles.footerEmailInput} placeholder="Email" type="email"/>
-                    <img className={styles.footerEmailInputImg} src={ArrowImg.src} alt="arrow"/>
+                    <img className={styles.footerEmailInputImg + " hoverButton"} src={ArrowImg.src} alt="arrow"/>
                 </div>
             </div>
         </div>
         <div className='px-4 mt-8 mx-auto lg:max-w-screen-2xl md:items-center md:px-8'>
             <div className='grid grid-cols-1'>
                 <div className='flex sm:flex-row sm:justify-between flex-col items-center'>
-                    <div className='flex items-center'>
+                    <div className='flex items-center hoverButton'>
                         <Link href='/'>
                         <img src={LogoImg.src} alt="logo"/>
                         </Link>
                     </div>
                     <div>
                         <ul className='items-center justify-end py-3 space-y-8 flex space-x-6 space-y-0'>
-                            <li className="ml-6 mt-8"><a href=''> <img src={Facebook.src} alt="logo"/></a></li>
-                            <li><a href=''> <img src={Twitter.src} alt="logo"/></a></li>
-                            <li><a href=''> <img src={Youtube.src} alt="logo"/></a></li>
-                            <li><a href=''> <img src={Instagram.src} alt="logo"/></a></li>
+                            <li className="ml-6 mt-8 hoverButton"><a href=''> <img src={Facebook.src} alt="logo"/></a></li>
+                            <li className="hoverButton"><a href=''> <img src={Twitter.src} alt="logo"/></a></li>
+                            <li className="hoverButton"><a href=''> <img src={Youtube.src} alt="logo"/></a></li>
+                            <li className="hoverButton"><a href=''> <img src={Instagram.src} alt="logo"/></a></li>
                         </ul>
                     </div>
                 </div>
@@ -45,8 +45,8 @@ export default function Footer() {
                     <div className="sm:block hidden"></div>
                     <div className="sm:block hidden"></div>
                     <div className="sm:block hidden"></div>
-                    <Link href='/uslovi-koriscenja'><div>Uslovi korišćenja</div></Link>
-                    <Link href='/politika-o-privatnosti'><div className={styles.footerEndDifferent}>Pravila o privatnosti</div></Link>
+                    <Link href='/uslovi-koriscenja'><div className={styles.hoveredListItem}>Uslovi korišćenja</div></Link>
+                    <Link href='/politika-o-privatnosti'><div className={styles.footerEndDifferent + " " + styles.hoveredListItem}>Pravila o privatnosti</div></Link>
                     <div>© {copyright} SuAir. Sva prava reservisana</div>
                 </div>
             </div>
