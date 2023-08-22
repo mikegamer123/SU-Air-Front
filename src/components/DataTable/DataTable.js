@@ -1,13 +1,15 @@
-import React, {useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import DataTable,{ createTheme } from "react-data-table-component"
 import styles from './DataTable.module.css';
 import {convertTimestampToDate, formatDate} from "@/dateHelper";
 import {BASE_API_URL} from "@/config";
 import {showToast} from "@/toastHelper";
 
+let selectedFavorites = [];
+
 const DataTableComponent = ({dataTableData, filters}) => {
 
-    const [selectedRows, setSelectedRows] = useState([]);
+    const [userFavorites, setUserFavorites] = useState([]);
 
     createTheme(
         'suAirTheme',
@@ -48,9 +50,9 @@ const DataTableComponent = ({dataTableData, filters}) => {
         },
         {
             name: 'Datum',
-            selector: row => filters.model_name == "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
+            selector: row => filters.model_name === "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
             sortable: true,
-            format: row => filters.model_name == "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
+            format: row => filters.model_name === "Hour" ? convertTimestampToDate(row.time_stamp) : formatDate(row.time_stamp),
             reorder: true
         },
         {
@@ -103,6 +105,25 @@ const DataTableComponent = ({dataTableData, filters}) => {
         },
     ];
 
+    useEffect(() => {
+        //get favorites for user
+        fetch(BASE_API_URL + '/AQI/get/user-favorites/'+filters.model_name, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setUserFavorites(data);
+                selectedFavorites = [];
+                data.forEach((row) => {
+                    selectedFavorites.push(row);
+                });
+            });
+    }, [filters]);
+
     const data = dataTableData.map((item) => ({
         id: item._id,
         name: item.name,
@@ -127,45 +148,68 @@ const DataTableComponent = ({dataTableData, filters}) => {
         message: "Izabran/a",
     };
 
-    const handleSelectedRowsChange = (state) => {
-            setSelectedRows(state.selectedRows);
-    };
 
     function saveFavorites() {
 
         const formattedData = {};
-        console.log(selectedRows);
-        selectedRows.forEach(row => {
-                if (!formattedData["itemId"]) {
-                    formattedData["itemId"] = [];
-                formattedData["itemId"].push(row.id);
-            }
+        const deleteData = {};
+        selectedFavorites.forEach(row => {
+                if (!formattedData["itemID"]) {
+                    formattedData["itemID"] = [];
+                }
+                formattedData["itemID"].push(row.id);
         });
 
-        console.log(JSON.stringify(formattedData));
+        userFavorites.forEach(row => {
+            if (!deleteData["itemID"]) {
+                deleteData["itemID"] = [];
+            }
+            deleteData["itemID"].push(row._id);
+        });
 
         fetch(BASE_API_URL + '/AQI/favorite'+filters.model_name, {
-            method: 'PUT',
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('login_token')
             },
-            body: JSON.stringify(formattedData)
+            body: JSON.stringify(deleteData)
         })
             .then(response => response.json())
             .then(data => {
-                showToast("Uspešno sačuvani favoriti!")
-                console.log(data);
+                fetch(BASE_API_URL + '/AQI/favorite'+filters.model_name, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+                    },
+                    body: JSON.stringify(formattedData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        showToast("Uspešno sačuvani favoriti!")
+                    })
+                    .catch(error => {
+                        showToast("Greška u čuvanju!<br>" + error, "error")
+                    });
             })
             .catch(error => {
-                showToast("Greška u čuvanju!<br>" + error, "error")
+                showToast("Greška u brisanju!<br>" + error, "error")
             });
     }
+
+
+    const handleSelectedRowsChange = useCallback((state) => {
+        selectedFavorites = [];
+        state.selectedRows.forEach((row) => {
+            selectedFavorites.push(row);
+        });
+    }, []);
 
     return (
         <div className={styles.dataTable}>
             <div className={styles.dataTableInner}>
-                { selectedRows.length > 0 && (<button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>Sačuvaj favorite 💕</button>)}
+                <button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>Sačuvaj favorite 💕</button>
         <DataTable
             title="Istorijski podatci"
             columns={columns}
@@ -179,7 +223,7 @@ const DataTableComponent = ({dataTableData, filters}) => {
             paginationRowsPerPageOptions={[25,50,75,100]}
             selectableRows
             onSelectedRowsChange={handleSelectedRowsChange}
-            selectedRows={selectedRows}
+            selectableRowSelected={(row) => userFavorites.map((selected) => selected._id).includes(row.id)}
             contextMessage={customTranslations}
             theme="suAirTheme"
         />
