@@ -11,6 +11,7 @@ import {
     getFirstDayOfNextMonth,
     getFirstDayOfPreviousTwoMonths
 } from "@/dateHelper";
+import {showToast} from "@/toastHelper";
 
 export default function History() {
 
@@ -60,10 +61,12 @@ export default function History() {
     const handleChange = (event) => {
             const {name, value} = event.target;
             setFilters((prevFilters) => ({...prevFilters, [name]: value}));
+            showToast("Podatci u tabeli su se promenili", "info")
     };
 
     const handleChangeDate = (name, date) => {
         setFilters((prevFilters) => ({...prevFilters, [name]: formatStringFromDate(date)}));
+        showToast("Podatci u tabeli su se promenili", "info")
     };
 
     //load datatable only on client side because of hydration errors

@@ -4,6 +4,8 @@ import Function1 from "src/resources/images/ss1.png"
 import Function2 from "src/resources/images/ss3.png"
 import Function4 from "src/resources/images/ss5.png"
 
+//TODO ADD ANIMATIONS TO PAGE FOR BETTER UI
+
 export default function Home() {
   return (
       <>

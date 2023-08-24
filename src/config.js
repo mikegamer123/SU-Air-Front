@@ -8,7 +8,7 @@ import cloudyIcon from "@/resources/images/cloud.png"
 import cloudierIcon from "@/resources/images/cloudier.png"
 
 export const BASE_URL = 'http://localhost:3001';
-export const BASE_API_URL = 'https://suair.onrender.com';
+export const BASE_API_URL = 'https://suair.dev.studiopresent.cloud'; //'https://suair.onrender.com';
 export const BASE_WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=46.0970&longitude=19.667587&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,winddirection_10m&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,weathercode,precipitation_probability_max&timezone=Europe%2FBerlin';
 export const qualityText = new Map();
 qualityText.set(75, 'Dobar');

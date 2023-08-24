@@ -57,10 +57,12 @@ export default function Registration() {
     const handleChange = (event) => {
         const {name, value} = event.target;
         setFilters((prevFilters) => ({...prevFilters, [name]: value}));
+        showToast("Podatci u tabeli su se promenili", "info")
     };
 
     const handleChangeDate = (name, date) => {
         setFilters((prevFilters) => ({...prevFilters, [name]: formatStringFromDate(date)}));
+        showToast("Podatci u tabeli su se promenili", "info")
     };
 
     useEffect(() => {

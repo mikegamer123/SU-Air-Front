@@ -212,11 +212,52 @@ const DataTableComponent = ({dataTableData, filters, route}) => {
         });
     }, []);
 
+    function convertToCSV(dataTableData) {
+        const headers = [
+            "Id", "Datum", "Stanica", "Temperatura", "Vlažnost",
+            "Pritisak", "PM2.5 AQI", "PM2.5 Koncentracija",
+            "PM10 AQI", "PM10 Koncentracija"
+        ];
+
+        const rows = dataTableData.map(item => [
+            item._id,
+            filters.model_name === "Hour" ? convertTimestampToDate(item.time_stamp) : formatDate(item.time_stamp),
+            item.name,
+            item.temperature,
+            item.humidity,
+            item.air_pressure,
+            item.particular_matter_25.aqi_us_ranking,
+            item.particular_matter_25.concentration,
+            item.particular_matter_10.aqi_us_ranking,
+            item.particular_matter_10.concentration
+        ]);
+
+        return [headers, ...rows].map(row => row.join(',')).join('\n');
+    }
+
+    function downloadCSV(csvContent) {
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Podatci SUAIR.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
     return (
         <div className={styles.dataTable}>
             <div className={styles.dataTableInner}>
+                <div className={styles.buttonsInner}>
                 <button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>{route.includes("/registration") ? "Izmeni" : "Sačuvaj"} favorite 💕
                 </button>
+                <button
+                    className={styles.csvDownloadButton + " hoverButton"}
+                    onClick={() => downloadCSV(convertToCSV(dataTableData))}
+                >
+                    Preuzmi CSV 📊
+                </button>
+                </div>
                 <DataTable
                     title="Istorijski podatci"
                     columns={columns}
