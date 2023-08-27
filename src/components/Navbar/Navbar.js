@@ -9,7 +9,7 @@ import {useRouter} from 'next/router'
 import {useEffect, useState} from 'react';
 
 
-export default function Navbar() {
+export default function Navbar({hide = false}) {
 
     const [navbar, setNavbar] = useState(false);
     const [user, setUser] = useState(null);
@@ -76,7 +76,7 @@ export default function Navbar() {
                     crossOrigin=""></script>
             <link rel="icon" href="/public/favicon.ico"/>
         </Head>
-        <nav className="w-full bg-white shadow">
+        <nav className={"w-full bg-white shadow " + (hide ? "hidden" : "")}>
             <div className="justify-between px-4 mx-auto lg:max-w-screen-2xl lg:items-center lg:flex lg:px-8">
                 <div>
                     <div className="flex items-center justify-between py-3 lg:py-5 lg:block">

@@ -7,10 +7,40 @@ import Twitter from 'src/resources/images/twitter-footer.png'
 import styles from './Footer.module.css';
 import Link from "next/link";
 import {useState} from "react";
+import {BASE_API_URL} from "@/config";
+import {showToast} from "@/toastHelper";
 
 export default function Footer() {
 
     const [copyright, setCopyright] = useState(new Date().getFullYear());
+    const [email, setEmail] = useState('');
+
+    const handleNewsletterSend = () => {
+        const apiUrl = BASE_API_URL + '/newsletter/add-email';
+        const requestData = {
+            email: email
+        };
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            },
+            body: JSON.stringify(requestData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                showToast("Uspešno sačuvan mejl za newsletter!<br>Hvala na prijavi!")
+            })
+            .catch(error => {
+                console.error('API error:', error);
+                showToast("Greška u čuvanju mejla za newsletter.", "error")
+            });
+    };
+
+    const handleEmailChange = (event) => {
+        setEmail(event.target.value);
+    }
 
     return (<>
         <div className={'grid grid-cols-1 ' + styles.footerImgDiv}>
@@ -18,8 +48,10 @@ export default function Footer() {
                 <h2 className={styles.footerNewsletterH2}>Povežite se sa SUAIRom</h2>
                 <h3 className={styles.footerNewsletterH3}>Prijavite se na naše novosti</h3>
                 <div className={styles.footerEmail}>
-                    <input className={styles.footerEmailInput} placeholder="Email" type="email"/>
-                    <img className={styles.footerEmailInputImg + " hoverButton"} src={ArrowImg.src} alt="arrow"/>
+                    <input className={styles.footerEmailInput} placeholder="Email" type="email"
+                           value={email}
+                           onChange={handleEmailChange}/>
+                    <img className={styles.footerEmailInputImg + " hoverButton"} onClick={handleNewsletterSend} src={ArrowImg.src} alt="arrow"/>
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@ import Navbar from "src/components/Navbar/Navbar"
 import Footer from "src/components/Footer/Footer"
 import Function1 from "src/resources/images/ss1.png"
 import Function2 from "src/resources/images/ss3.png"
+import Function3 from "src/resources/images/widgetsPic.png"
 import Function4 from "src/resources/images/ss5.png"
 
 //TODO ADD ANIMATIONS TO PAGE FOR BETTER UI
@@ -28,6 +29,7 @@ export default function Home() {
               <p>
                 Naši vidžeti omogućavaju vam da jednostavno integrišete informacije o kvalitetu vazduha na vašu veb stranicu. Kopirajte i nalepite kod vidžeta kako biste omogućili vašim posetiocima da brzo pristupe trenutnim podacima o vazduhu.              </p>
             </div>
+            <img src={Function3.src} alt="function3-img"/>
           </section>
 
           <section className="function-card historical-data-section">

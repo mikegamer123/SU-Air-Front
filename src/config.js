@@ -11,27 +11,27 @@ export const BASE_URL = 'http://localhost:3001';
 export const BASE_API_URL = 'https://suair.dev.studiopresent.cloud'; //'https://suair.onrender.com';
 export const BASE_WEATHER_URL = 'https://api.open-meteo.com/v1/forecast?latitude=46.0970&longitude=19.667587&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m,weathercode,winddirection_10m&daily=temperature_2m_max,temperature_2m_min,windspeed_10m_max,weathercode,precipitation_probability_max&timezone=Europe%2FBerlin';
 export const qualityText = new Map();
-qualityText.set(75, 'Dobar');
-qualityText.set(55, 'Umereno');
-qualityText.set(40, 'Nezdravo za os. grupe');
-qualityText.set(30, 'Nezdravo');
-qualityText.set(20, 'Vrlo Nezdravo');
-qualityText.set(0, 'Opasno');
+qualityText.set(301, 'Opasno');
+qualityText.set(201, 'Vrlo Nezdravo');
+qualityText.set(151, 'Nezdravo');
+qualityText.set(101, 'Nezdravo za os. grupe');
+qualityText.set(51, 'Umereno');
+qualityText.set(0, 'Dobar');
 export const qualityColor = new Map();
-qualityColor.set(75, 'dobar');
-qualityColor.set(55, 'umereno');
-qualityColor.set(40, 'nezdravoOs');
-qualityColor.set(30, 'nezdravo');
-qualityColor.set(20, 'vrloNezdravo');
-qualityColor.set(0, 'opasno');
+qualityColor.set(301, 'opasno');
+qualityColor.set(201, 'vrloNezdravo');
+qualityColor.set(151, 'nezdravo');
+qualityColor.set(101, 'nezdravoOs');
+qualityColor.set(51, 'umereno');
+qualityColor.set(0, 'dobar');
 
 export const qualityColorVals = new Map();
-qualityColorVals.set(75, '#9CD84E');
-qualityColorVals.set(55, '#FACF39');
-qualityColorVals.set(40, '#F99049');
-qualityColorVals.set(30, '#F65E5F');
-qualityColorVals.set(20, '#A070B6');
-qualityColorVals.set(0, '#A06A7B');
+qualityColorVals.set(301, '#A06A7B');
+qualityColorVals.set(201, '#A070B6');
+qualityColorVals.set(151, '#F65E5F');
+qualityColorVals.set(101, '#F99049');
+qualityColorVals.set(51, '#FACF39');
+qualityColorVals.set(0, '#9CD84E');
 
 //weather descriptions
 export const weatherMap = new Map([

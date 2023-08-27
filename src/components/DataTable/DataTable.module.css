@@ -88,8 +88,6 @@
     transition:  .5s ease;
 }
 
-
-
 .dataTable input[type="checkbox"]:checked:before {
     border: 1px solid transparent;
     background-color: transparent;
@@ -105,3 +103,4 @@
     color: gold;
     transition:  .5s ease;
 }
+

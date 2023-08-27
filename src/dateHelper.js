@@ -57,6 +57,15 @@ export function getCurrentDateFormatted (){
     return `${year}-${month}-${day}`;
 }
 
+export function getDayBeforeDateFormatted (){
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - 1);
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export function getFirstDayOfNextMonth() {
     const currentDate = new Date();
     const nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);

@@ -7,7 +7,9 @@
     --main-bg: 252, 252, 252;
 }
 
-html{scroll-behavior:smooth}
+html {
+    scroll-behavior: smooth
+}
 
 body {
     color: rgb(var(--foreground-rgb));
@@ -15,15 +17,92 @@ body {
     overflow-x: hidden;
 }
 
-.mainContent h1{
-text-align: center;
+.registrationLink {
+    color: #009988;
+}
+
+.rdt_TableHeadRow .rdt_TableCol:first-child:hover::before {
+    content: "Izaberi sve podatke za čuvanje";
+    position: absolute;
+    top: -5px;
+    left: 80%;
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 9999999999;
+}
+
+.rdt_TableHeadRow .rdt_TableCol:first-child:hover::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 80%;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.rdt_TableHeadRow .rdt_TableCol:first-child:hover::before,
+.rdt_TableHeadRow .rdt_TableCol:first-child:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.rdt_TableRow .rdt_TableCell:first-child:hover::before {
+    content: "Izaberi podatak za čuvanje";
+    position: absolute;
+    top: -25px;
+    left: 60%;
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 3px;
+    font-size: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 9999999999;
+}
+
+.rdt_TableRow .rdt_TableCell:first-child:hover::after {
+    content: "";
+    position: absolute;
+    top: -15px;
+    left: 60%;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+    transform: translateX(-50%);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.rdt_TableRow .rdt_TableCell:first-child:hover::before,
+.rdt_TableRow .rdt_TableCell:first-child:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mainContent h1 {
+    text-align: center;
     font-size: 35px;
     margin-top: 50px;
     font-weight: bold;
-    color:#009988;
+    color: #009988;
 }
 
-.mainContent .functions{
+.mainContent .functions {
     text-align: center;
     font-size: 30px;
     margin-top: 30px;
@@ -31,22 +110,22 @@ text-align: center;
     margin-bottom: 50px;
 }
 
-.function-card{
+.function-card {
     width: 80%;
     margin: 50px auto;
     text-align: center;
-    box-shadow: -5px 5px 30px -6px rgba(0,0,0,0.75);
+    box-shadow: -5px 5px 30px -6px rgba(0, 0, 0, 0.75);
     border: 1px solid #009988;
 }
 
-.function-card h2{
+.function-card h2 {
     font-size: 25px;
     margin-top: 30px;
     font-weight: bold;
-    color:#009988;
+    color: #009988;
 }
 
-.function-card p{
+.function-card p {
     font-size: 20px;
     margin-top: 25px;
     text-align: center;
@@ -104,6 +183,7 @@ text-align: center;
 .loading-img-cont {
     width: 200px;
     position: relative;
+    left: -30px;
 }
 
 .loading-img {
@@ -149,7 +229,7 @@ text-align: center;
     cursor: pointer;
 }
 
-.saveFavoritesBtn{
+.saveFavoritesBtn {
     color: white !important;
     display: flex;
     background: #009988;
@@ -173,7 +253,7 @@ text-align: center;
 .toast-active {
     right: 80px !important;
     opacity: 100% !important;
-    display: flex!important;
+    display: flex !important;
 }
 
 .districtsDiv {
@@ -195,7 +275,7 @@ text-align: center;
     top: 30%;
 }
 
-.hoverItem:hover{
+.hoverItem:hover {
     color: #009988;
 }
 
@@ -266,7 +346,7 @@ text-align: center;
     cursor: pointer;
 }
 
-.stationDistrict{
+.stationDistrict {
     cursor: pointer;
 }
 
@@ -301,6 +381,7 @@ text-align: center;
     left: 10.5%;
     top: 2%;
 }
+
 
 .aqiLiveNumber {
     text-align: center;
@@ -467,6 +548,7 @@ text-align: center;
     padding-bottom: 10px;
     padding-left: 10px;
 }
+
 .analyseDiv .details tbody td {
     padding-bottom: 5px;
     padding-top: 5px;
@@ -515,10 +597,12 @@ text-align: center;
 .d-initial {
     display: initial;
 }
-.mobileApp{
+
+.mobileApp {
     background: #FCFCFC;
 }
-.appImg{
+
+.appImg {
     background-image: url("http://localhost:3000/appImg.png");
     width: 100%;
     height: 615px;
@@ -529,16 +613,18 @@ text-align: center;
     position: relative;
 }
 
-.appImg h1{
+.appImg h1 {
     text-align: center;
     color: #FFFFFF;
     font-size: 24px;
 }
-.appImg h2{
+
+.appImg h2 {
     text-align: center;
     color: #FFFFFF;
 }
-.appImg .appButton{
+
+.appImg .appButton {
     color: #FFFFFF;
     text-align: center;
     border: 2px solid white;
@@ -550,7 +636,7 @@ text-align: center;
     cursor: pointer;
 }
 
-.filtersDiv{
+.filtersDiv {
     width: 100%;
     margin: 0 auto;
     padding: 50px;
@@ -558,43 +644,43 @@ text-align: center;
     transition: 0.3s;
 }
 
-.filtersInnerDiv{
+.filtersInnerDiv {
     border: #009988 2px solid;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     animation: slideDown 0.3s ease-in-out forwards;
 }
 
-.filtersDiv .h2FilterClose{
+.filtersDiv .h2FilterClose {
     width: 100%;
     margin-left: 16px;
     font-weight: 400;
     font-size: 22px;
-    color:#009988;
+    color: #009988;
     display: flex;
     justify-content: space-between;
 }
 
-.filtersDiv .h2FilterClose .closeButton{
+.filtersDiv .h2FilterClose .closeButton {
     margin-right: 16px;
     transition: transform 0.3s;
 }
 
-.filtersDiv .h2FilterClose .closeButton:hover{
-   transform: rotate(90deg);
+.filtersDiv .h2FilterClose .closeButton:hover {
+    transform: rotate(90deg);
 }
 
-.filtersDiv .h2ToOpenFilters{
+.filtersDiv .h2ToOpenFilters {
     font-weight: 400;
     font-size: 22px;
-    color:#ffffff;
+    color: #ffffff;
     background: #009988;
     cursor: pointer;
 }
 
-.filterSingle{
+.filterSingle {
     margin: 10px;
     display: flex;
     flex-direction: column;
@@ -638,31 +724,31 @@ text-align: center;
     background-color: rgba(0, 0, 0, 0.20);
     transition: .25s all ease;
     pointer-events: none;
-    color:white;
+    color: white;
 }
 
 .filterSingle .select:hover::after {
     color: #f39c12;
 }
 
-.filterSingle input{
+.filterSingle input {
     border: 1px solid #009988;
     width: 60%;
     margin: 0 auto;
-    text-align: center!important;
+    text-align: center !important;
 }
 
-.filterSingle input[type="number"]{
+.filterSingle input[type="number"] {
     width: 30%;
     text-indent: 13px;
 }
 
-.today{
+.today {
     background: #F3F7FB;
     box-shadow: inset 2px 0px 0px #499FBC;
 }
 
-.chartDiv .button{
+.chartDiv .button {
     background: white;
     border: 1px solid #456E98;
     border-radius: 4px;
@@ -671,41 +757,44 @@ text-align: center;
     cursor: pointer;
 }
 
-.chartDiv .active{
-    background: #009988!important;
-    border: 1px solid #456E98!important;
-    border-radius: 4px!important;
-    color:white!important;
+.chartDiv .active {
+    background: #009988 !important;
+    border: 1px solid #456E98 !important;
+    border-radius: 4px !important;
+    color: white !important;
 }
 
-.chartDiv .chart{
+.chartDiv .chart {
     background: #F6FAFB;
     padding: 20px;
 }
-.leaflet-control-zoom{
-    border: none!important;
-    margin-bottom: 40px!important;
+
+.leaflet-control-zoom {
+    border: none !important;
+    margin-bottom: 40px !important;
 }
-.leaflet-control-zoom-in{
+
+.leaflet-control-zoom-in {
     background: #FFFFFF;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-    border-bottom-left-radius: 16px!important;
-    border-bottom-right-radius: 16px!important;
-    border-top-left-radius: 16px!important;
-    border-top-right-radius: 16px!important;
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
     margin-bottom: 10px;
 }
-.leaflet-control-zoom-out{
-    border-bottom-left-radius: 16px!important;
-    border-bottom-right-radius: 16px!important;
-    border-top-left-radius: 16px!important;
-    border-top-right-radius: 16px!important;
+
+.leaflet-control-zoom-out {
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
     background: #FFFFFF;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.leaflet-control-zoom-out span, .leaflet-control-zoom-in span{
-    color:#009988;
+.leaflet-control-zoom-out span, .leaflet-control-zoom-in span {
+    color: #009988;
 }
 
 .mobile {
@@ -746,17 +835,100 @@ text-align: center;
     }
 }
 
+@keyframes slideDownTable {
+    0% {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
 .bouncy-animation {
     animation: bouncy 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
 }
 
+.userWebsitesTable {
+    margin: 0 auto;
+    border: 2px solid #009988;
+    width: 60%;
+    text-align: center;
+    animation: slideDownTable 0.5s ease-in-out forwards;
+}
+
+.userWebsitesTable th {
+    border: 1px solid #009988;
+    color: #009988;
+    padding: 10px;
+}
+
+.userWebsitesTable td {
+    border: 1px solid #009988;
+    font-weight: bolder;
+    padding: 10px;
+}
+
+.userWebsitesTable tr {
+    animation: slideDownTable 0.3s ease-in-out forwards;
+}
+
+.widgetSpace {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.widgetSpace .leaflet-container {
+    width: 40% !important;
+    height: 400px !important;
+}
+
+.widgetSpace .codeCopier {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 60% !important;
+    height: 400px !important;
+}
+
+.widgetSpace .filterSingle {
+    align-self: center;
+}
+
+.widgetSpace .dataLive {
+    width: 40%;
+}
+
+.widgetSpace .analyseDiv {
+    transform: unset;
+    width: 40%;
+}
+
+.widgetMini .leaflet-container {
+    width: 100%!important;
+    height: 400px !important;
+}
+
+.widgetMini .dataLive {
+    width: 100%!important;
+    height: 400px !important;
+}
+
+.widgetMini .analyseDiv{
+    width: 100%!important;
+    height: 480px !important;
+}
+
 @media (max-width: 1300px) {
-    .legendLive div div{
-    font-size: 12px;
+    .legendLive div div {
+        font-size: 12px;
     }
 }
+
 @media (max-width: 1020px) {
-    .legendLive{
+    .legendLive {
         background: rgba(0, 153, 136, 0.5);
         border-radius: 4px;
         position: absolute;
@@ -765,9 +937,45 @@ text-align: center;
         transform: translate(-50%, 0%);
         z-index: 9998;
     }
-    .legendLive div div{
+
+    .legendLive div div {
         padding: 0px;
         min-width: 50px;
         min-height: 20px;
+    }
+
+    .widgetSpace {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .widgetSpace > div:nth-child(1), .parent-container > div:nth-child(2) {
+        width: 100% !important;
+    }
+
+    .widgetSpace .codeCopier {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .stationText {
+        font-size: 12px;
+    }
+
+    .mainHeader {
+        font-size: 25px !important;
+    }
+
+    .aqiLiveDescription {
+        font-size: 12px !important;
+    }
+
+    .aqiLiveDescription span {
+        font-size: 20px !important;
+    }
+
+    .analyseDiv .details tbody td {
+        font-size: 11px !important;
     }
 }

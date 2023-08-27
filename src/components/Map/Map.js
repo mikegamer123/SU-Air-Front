@@ -45,7 +45,7 @@ const Map = () => {
     const closestSensor = findClosestObject(user ? user.latitude : matchedDistrict?.latitude || 0, user ? user.longitude : matchedDistrict?.longitude || 0, sensors);
 
     return (
-        <MapContainer center={user ? [user.latitude, user.longitude] : ( matchedDistrict ? [matchedDistrict?.latitude, matchedDistrict?.longitude] : [0,0])} zoom={15} zoomControl={false}  scrollWheelZoom={false} style={{height: 1000, width: "100%"}}>
+        <MapContainer center={user ? [user.latitude, user.longitude] : ( matchedDistrict ? [matchedDistrict?.latitude, matchedDistrict?.longitude] : [0,0])} zoom={13} zoomControl={false}  scrollWheelZoom={false} style={{height: 1000, width: "100%"}}>
             <ZoomControl position="bottomright" /> {/* Add a custom zoom control at the bottom left */}
             <TileLayer
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

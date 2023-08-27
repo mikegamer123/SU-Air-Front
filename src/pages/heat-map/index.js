@@ -1,5 +1,6 @@
 import Navbar from "src/components/Navbar/Navbar"
 import Footer from "src/components/Footer/Footer";
+import placeHolder from "src/resources/images/placeHolder.jpg";
 import panorama1 from "/src/resources/images/panorama-subotica-1.webp"
 import panorama2 from "/src/resources/images/panorama-subotica-2.webp"
 import panorama3 from "/src/resources/images/panorama-subotica-3.webp"
@@ -68,6 +69,7 @@ export default function Index() {
             });
     }, []);
 
+
     //load all districts
     useEffect(() => {
         const fetchData = () => {
@@ -106,12 +108,13 @@ export default function Index() {
                         <div className="overlayDistricts">
                             <div className="overlayText">Pogledajte na mapi</div>
                         </div>
-                        <img className="w-full" src={index % 3 == 0 ? panorama3.src : index % 2 == 0 ? panorama2.src : panorama1.src} alt="Panorama of subotica"/>
+                        <img className="w-full" src={index % 3 == 0 ? placeHolder.src : index % 2 == 0 ? placeHolder.src : placeHolder.src} alt="Panorama of subotica"/>
                         <div className="font-bold districtText text-xl mb-2">{district.name}</div>
                     </div>
                     </Link>
                 ))}
             </div>
+            <a href="https://www.freepik.com/free-vector/silhouette-skyline-illustration_3786385.htm#query=city&position=0&from_view=search&track=sph">Image by rawpixel.com</a> on Freepik
             <Footer/>
         </>
     )

@@ -9,6 +9,12 @@ let selectedFavorites = [];
 
 const DataTableComponent = ({dataTableData, filters, route}) => {
     const [userFavorites, setUserFavorites] = useState([]);
+    const [user, setUser] = useState([]);
+
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        setUser(userData);
+    }, []);
 
     createTheme(
         'suAirTheme',
@@ -144,7 +150,7 @@ const DataTableComponent = ({dataTableData, filters, route}) => {
     const customTranslations = {
         singular: "Red",
         plural: "Redova",
-        message: "Sačuvani kao Favoriti" + (route.includes("/registration") ? "  ( Svi izmenjeni favoriti će biti izbrisani nakon odlaska sa stranice ili promene filtera )" : ""),
+        message: "izabrano kao Favoriti" + (route.includes("/registration") ? "  ( Svi izmenjeni favoriti će biti izbrisani nakon odlaska sa stranice ili promene filtera )" : "  ( Pritiskom na dugme \"Sačuvaj Favorite\" sačuvaćete ove favorite za kasniji pregled )"),
         pagination: {
             rowsPerPage: 'Redova po stranici:',
             rangeSeparator: 'od',
@@ -193,7 +199,7 @@ const DataTableComponent = ({dataTableData, filters, route}) => {
                 })
                     .then(response => response.json())
                     .then(data => {
-                        showToast("Uspešno sačuvani favoriti!")
+                        showToast("Uspešno sačuvani favoriti!<br>Favorite možete pregledati na Korisničkoj stranici!")
                     })
                     .catch(error => {
                         showToast("Greška u čuvanju!<br>" + error, "error")
@@ -249,8 +255,9 @@ const DataTableComponent = ({dataTableData, filters, route}) => {
         <div className={styles.dataTable}>
             <div className={styles.dataTableInner}>
                 <div className={styles.buttonsInner}>
-                <button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>{route.includes("/registration") ? "Izmeni" : "Sačuvaj"} favorite 💕
+                    {user && (<button className={styles.saveFavoritesButton + " hoverButton"} onClick={saveFavorites}>{route.includes("/registration") ? "Izmeni" : "Sačuvaj"} favorite 💕
                 </button>
+                    )}
                 <button
                     className={styles.csvDownloadButton + " hoverButton"}
                     onClick={() => downloadCSV(convertToCSV(dataTableData))}
@@ -269,7 +276,7 @@ const DataTableComponent = ({dataTableData, filters, route}) => {
                     defaultSortAsc={false}
                     paginationPerPage={25}
                     paginationRowsPerPageOptions={[25, 50, 75, 100]}
-                    selectableRows
+                    selectableRows={!!user}
                     onSelectedRowsChange={handleSelectedRowsChange}
                     selectableRowSelected={(row) => userFavorites.map((selected) => selected._id).includes(row.id)}
                     contextMessage={customTranslations}

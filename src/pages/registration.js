@@ -2,11 +2,11 @@ import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer";
 import { showToast } from "@/toastHelper";
 import jwt from 'jsonwebtoken';
-import {BASE_API_URL} from '@/config';
+import {BASE_API_URL, weatherIconMap} from '@/config';
 import React, { useEffect, useState } from 'react';
 import {useRouter} from "next/router";
 import {
-    convertTimestampToDate, formatDate, formatReturnDate,
+    convertTimestampToDate, formatDate, formatDateToSerbian, formatReturnDate,
     formatStringFromDate,
     getFirstDayOfNextMonth,
     getFirstDayOfPreviousTwoMonths
@@ -14,6 +14,7 @@ import {
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import DataTableComponent from "@/components/DataTable/DataTable";
+import windBlackIcon from "@/resources/images/windBlack.svg";
 
 export default function Registration() {
 
@@ -25,6 +26,8 @@ export default function Registration() {
     const [dataTableData, setDataTableData] = useState([]);
     const [sensors, setSensors] = useState([]);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [webSite, setWebSiteName] = useState('');
+    const [userWebSites, setUserWebSites] = useState(null);
 
     useEffect(() => {
         const userData = JSON.parse(localStorage.getItem('user'));
@@ -64,6 +67,25 @@ export default function Registration() {
         setFilters((prevFilters) => ({...prevFilters, [name]: formatStringFromDate(date)}));
         showToast("Podatci u tabeli su se promenili", "info")
     };
+
+    const getUserWebsites = () => {
+        //get user websites
+        fetch(BASE_API_URL + '/website/get', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                setUserWebSites(data);
+            });
+    }
+
+    useEffect(() => {
+        getUserWebsites();
+    }, []);
 
     useEffect(() => {
         //change data on filter change
@@ -162,6 +184,15 @@ export default function Registration() {
         setPassword(event.target.value);
     };
 
+    const handleWebSiteNameChange = (event) => {
+        const inputValue = event.target.value;
+
+        // Remove "https://www." and "www." from the input value
+        const cleanedValue = inputValue.replace(/^(https?:\/\/)?(www\.)?/i, '');
+
+        setWebSiteName(cleanedValue);
+    };
+
     const handleGoogleAuth = (event) => {
             const url = `${BASE_API_URL}/auth/google`;
             const width = 800;
@@ -198,6 +229,67 @@ export default function Registration() {
                 showToast('Error:' + error, 'error');
             });
     };
+
+    const handleAddWebsite = (event) => {
+        event.preventDefault();
+        userWebSites.push(webSite);
+        const data = {
+            websites: userWebSites,
+        };
+
+        fetch(`${BASE_API_URL}/website/add`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.text().then((text) => {
+                        getUserWebsites();
+                        showToast('Web sajt uspešno dodat!');
+                    });
+                } else {
+                    showToast('Web sajt dodavanje neuspešno!', 'error');
+                }
+            })
+            .catch((error) => {
+                showToast('Error:' + error, 'error');
+            });
+    };
+
+    const handleDeleteWebsite = (event) => {
+        event.preventDefault();
+        const updatedUserWebSites = userWebSites.filter(site => site !== event.target.value);
+        const data = {
+            websites: updatedUserWebSites,
+        };
+
+        fetch(`${BASE_API_URL}/website/add`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('login_token')
+            },
+            body: JSON.stringify(data)
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.text().then((text) => {
+                        getUserWebsites();
+                        showToast('Web sajt uspešno izbrisan!');
+                    });
+                } else {
+                    showToast('Web sajt brisanje neuspešno!', 'error');
+                }
+            })
+            .catch((error) => {
+                showToast('Error:' + error, 'error');
+            });
+    };
+
 
     const handleLogout = (event) => {
         try {
@@ -473,7 +565,52 @@ export default function Registration() {
                             <DataTableComponent dataTableData={dataTableData} filters={filters} route={window.location.href}/>
                         </div>
                     )}
-                    <p className='text-2xl my-5 text-center font-bold'>Odjava</p>
+                    <hr className="mt-5" />
+                    <p className='text-2xl mt-5 text-center font-bold'>WEB SAJTOVI ZA WIDGET</p>
+                    <div className='flex justify-center'>
+                        <div className="w-full max-w-lg mt-4">
+                            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleAddWebsite}>
+                                <div className="mb-4">
+                                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                                        Web sajt domen
+                                    </label>
+                                    <input
+                                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                        id="website" value={webSite} onChange={handleWebSiteNameChange} name='website' type="text" placeholder="Web sajt" />
+                                </div>
+                                <div className="flex items-center justify-center">
+                                    <button
+                                        className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                        type="submit">
+                                        Dodaj Web Sajt
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <hr className="mt-5"/>
+                    <p className='text-2xl mt-5 mb-5 text-center font-bold'>VAŠI PRIJAVLJENI WEB SAJTOVI</p>
+                    {userWebSites  && (<table className="userWebsitesTable">
+                        <thead>
+                        <tr>
+                            <th>Domen Sajta</th>
+                            <th>Url format za Widget</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {userWebSites ? userWebSites.map((userWebSite, index) => (
+                            <tr  key={index}>
+                                <td>{userWebSite}</td>
+                                <td>{user.id + "_" + userWebSite}</td>
+                                <td>
+                                    <button type="button" value={userWebSite} onClick={handleDeleteWebsite}
+                                            className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Izbriši
+                                    </button></td>
+                            </tr> )) : ""}
+                        </tbody>
+                    </table>)}
+                    <hr className="mt-5"/>
+                    <p className='text-2xl my-5 text-center font-bold'>ODJAVA</p>
                                 <div className="flex items-center justify-center">
                                     <button
                                         className="bg-green-600 hover:bg-green-400 text-white font-bold py-2 my-6 px-4 rounded focus:outline-none focus:shadow-outline"
